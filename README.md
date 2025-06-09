@@ -2,6 +2,10 @@
 
 A user-edited song database built in react and postgresql.
 
+# Demo
+
+[Youtube link to demo](https://youtu.be/quTLm0Ql6qQ)
+
 ## Current Features
 * Upload song metadata such as title, artist, album, and release year
 * The app asks the user to clarify if it looks like duplicate data, in an attempt to maintain data quality
