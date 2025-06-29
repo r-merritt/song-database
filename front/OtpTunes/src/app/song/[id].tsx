@@ -1,17 +1,13 @@
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Dimensions, ScrollView, Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 
 import TagsCard from '../../components/TagsCard'
 import AddTag from '../../components/AddTag';
 
-const { width } = Dimensions.get('window')
-
 export default function Song() {
   const { id } = useLocalSearchParams();
-  const router = useRouter();
 
   // album_artist, album_artist_id, album_title, release_year, show_artist_or_album,
   // song_album_id, song_artist, song_artist_id, song_id, song_title
@@ -75,9 +71,6 @@ export default function Song() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-        <Pressable onPress={() => {
-          router.navigate({pathname: '/'})
-        }}><Text>Return Home</Text></Pressable>
         {songResults &&
         <View>
         <Text style={styles.title}>{songResults.song_title}</Text>

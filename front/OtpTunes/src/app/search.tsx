@@ -33,7 +33,21 @@ export default function Search({ } : { }) {
       router.navigate({
         pathname: '/song/[id]',
         params: { id: songId }
-    });
+      });
+    }
+
+    function goToArtist(artistId : string) {
+      router.navigate({
+        pathname: '/artist/[id]',
+        params: { id: artistId }
+      });
+    }
+
+    function goToAlbum(albumId : string) {
+      router.navigate({
+        pathname: '/album/[id]',
+        params: { id: albumId }
+      });
     }
 
     function onChangeText(type : string, text : string) {
@@ -69,9 +83,6 @@ export default function Search({ } : { }) {
 
   return (
     <View>
-      <Pressable onPress={() => {
-        router.navigate({pathname: '/'})
-      }}><Text>Return Home</Text></Pressable>
       <View style={styles.container}>
         <View style={styles.box}>
             <View style={styles.section}>
@@ -129,8 +140,16 @@ export default function Search({ } : { }) {
                     <Text>{result['song_title']}</Text>
                   </Pressable>
                 </DataTable.Cell>
-                <DataTable.Cell>{result['artist_text']}</DataTable.Cell>
-                <DataTable.Cell>{result['album_title']}</DataTable.Cell>
+                <DataTable.Cell>
+                  <Pressable onPress={() => goToArtist(result['display_artist'])}>
+                    <Text>{result['artist_text']}</Text>
+                  </Pressable>
+                </DataTable.Cell>
+                <DataTable.Cell>
+                  <Pressable onPress={() => goToAlbum(result['display_album'])}>
+                    <Text>{result['album_title']}</Text>
+                  </Pressable>
+                </DataTable.Cell>
                 <DataTable.Cell numeric>{result['release_year']}</DataTable.Cell>
               </DataTable.Row>
             ))}

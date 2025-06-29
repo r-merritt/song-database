@@ -17,6 +17,12 @@ var addNewTagToSongRouter = require('./routes/addnewtagtosong');
 var addExistingTagToSongRouter = require('./routes/addexistingtagtosong');
 var getTagByTextRouter = require('./routes/gettagbytext');
 var searchSongsRouter = require('./routes/searchsongs');
+var getArtistByIdRouter = require('./routes/getartistbyid');
+var getSongsAndAlbumsByArtistIdRouter = require('./routes/getsongsandalbumsbyartistid');
+var getTagByIdRouter = require('./routes/gettagbyid');
+var getSongsByTagIdRouter = require('./routes/getsongsbytagid');
+var getAlbumByIdRouter = require('./routes/getalbumbyid');
+var getSongsByAlbumIdRouter = require('./routes/getsongsbyalbumid');
 
 var app = express();
 
@@ -43,6 +49,12 @@ app.use('/addnewtagtosong', addNewTagToSongRouter);
 app.use('/addexistingtagtosong', addExistingTagToSongRouter);
 app.use('/gettagbytext', getTagByTextRouter);
 app.use('/searchsongs', searchSongsRouter);
+app.use('/getartistbyid', getArtistByIdRouter);
+app.use('/getsongsandalbumsbyartistid', getSongsAndAlbumsByArtistIdRouter);
+app.use('/gettagbyid', getTagByIdRouter);
+app.use('/getsongsbytagid', getSongsByTagIdRouter);
+app.use('/getalbumbyid', getAlbumByIdRouter);
+app.use('/getsongsbyalbumid', getSongsByAlbumIdRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
