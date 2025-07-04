@@ -12,10 +12,10 @@ A user-edited song database built in react and postgresql.
 * Search for songs by title, artist, album, and/or tags
 * Go to song pages and see all metadata for that song, as well as user-added tags
 * Add tags to existing songs
-
-## Future Features
 * Pages for artists and albums, to view all associated songs and metadata
 * Tag pages, to view all songs under a certain tag
+
+## Future Features
 * Able to group tags as 'related' or as being synonymous
 * Able to create playlist pages and add songs and commentary to the playlist
 * Able to link out to other sites that host listenable versions of the playlists

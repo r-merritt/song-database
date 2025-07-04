@@ -28,6 +28,10 @@ router.get('/', async function(req, res, next) {
         database: 'otptunes',
         })
 
+        function prepareQuery(queryText) {
+            return '%' + queryText.split(' ').join('%') + '%';
+        }
+
         const values = [
         ];
 
@@ -35,15 +39,15 @@ router.get('/', async function(req, res, next) {
                    'songs.display_title AS song_title, albums.display_title AS album_title FROM \n';
             
         if (req.query.title) {
-            values.push(req.query.title);
-            text += '(SELECT * FROM songs WHERE UPPER(display_title) = UPPER($1)) songs \n';
+            values.push(prepareQuery(req.query.title));
+            text += '(SELECT * FROM songs WHERE display_title ILIKE $1) songs \n';
         } else {
             text += 'songs \n';
         }
 
         if (req.query.artist) {
-            values.push(req.query.artist);
-            text += `JOIN (SELECT * FROM artists WHERE UPPER(artist_text) = UPPER(${'$' + values.length})) artists \n`;
+            values.push(prepareQuery(req.query.artist));
+            text += `JOIN (SELECT * FROM artists WHERE artist_text ILIKE ${'$' + values.length}) artists \n`;
         } else {
             text += 'LEFT JOIN artists \n';
         }
@@ -51,8 +55,8 @@ router.get('/', async function(req, res, next) {
         text += 'ON songs.display_artist = artists.artist_id \n';
 
         if (req.query.album) {
-            values.push(req.query.album);
-            text += `JOIN (SELECT * FROM albums WHERE UPPER(display_title) = UPPER(${'$' + values.length})) albums \n`;
+            values.push(prepareQuery(req.query.album));
+            text += `JOIN (SELECT * FROM albums WHERE display_title ILIKE ${'$' + values.length}) albums \n`;
         } else {
             text += 'LEFT JOIN albums \n';
         }
@@ -60,17 +64,17 @@ router.get('/', async function(req, res, next) {
         text += 'ON songs.display_album = albums.album_id \n';
 
         if (req.query.tags) {
-            text += 'JOIN (SELECT * FROM (SELECT * FROM tags WHERE \n';
+            text += 'WHERE song_id IN (SELECT song_id FROM song_tags JOIN (SELECT * FROM tags WHERE \n';
             for (var tagIndex in tagArray) {
-                values.push(tagArray[tagIndex]);
+                values.push(prepareQuery(tagArray[tagIndex]));
                 if (tagIndex == 0) {
-                    text += `UPPER(tag_text) = UPPER(${'$' + values.length}) \n`;
+                    text += `tag_text ILIKE ${'$' + values.length} \n`;
                 } else {
-                    text += `OR UPPER(tag_text) = UPPER(${'$' + values.length}) \n`;
+                    text += `OR tag_text ILIKE ${'$' + values.length} \n`;
                 }
             }
             text += ') tags \n' +
-                    'JOIN song_tags ON song_tags.tag_id = tags.tag_id) song_tags ON song_tags.song_id = songs.song_id \n';
+                    `ON tags.tag_id = song_tags.tag_id GROUP BY song_id HAVING COUNT(song_id) = ${tagArray.length}) \n`;
         }
 
         text += ';'

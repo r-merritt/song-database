@@ -3,10 +3,11 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import ActionButton from './ActionButton';
 
-export default function VerifyAlbumAndSongs({album, artist, songs, onVerify} : {album: string, artist: string, songs: Array<string>, onVerify: Function}) {
+export default function VerifyAlbumAndSongs({album, artist, year, songs, onVerify} : {album: string, artist: string, year: number, songs: Array<string>, onVerify: Function}) {
   return (
     <View style={styles.container}>
         <Text style={styles.artistName}>{album} by {artist}</Text>
+        <Text style={styles.artistName}>released in {year}</Text>
         <Text style={styles.label}>Song selection:</Text>
         { songs.map((song, key) => {
             return (

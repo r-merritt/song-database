@@ -3,7 +3,7 @@ var Client = pg.Client;
 var express = require('express');
 var router = express.Router();
 
-/* GET find song with title listing. */
+/* GET find song with title (and artist and/or album) listing. */
 router.get('/', async function(req, res, next) {
         console.log("Find song with title");
 
@@ -15,6 +15,9 @@ router.get('/', async function(req, res, next) {
         console.log(req.query.artist);
         console.log(req.query.album);
 
+        function prepareQuery(queryText) {
+            return '%' + queryText.split(' ').join('%') + '%';
+        }
 
         const client = new Client({
         user: 'postgres',
@@ -25,22 +28,22 @@ router.get('/', async function(req, res, next) {
         })
 
         const values = [
-            req.query.title,
+            prepareQuery(req.query.title),
         ];
 
         var text = 'SELECT song_id, songs.display_title AS song_title, songs.display_artist, songs.display_album, artist_text, release_year, albums.display_title AS album_title \n' + 
-                   'FROM (SELECT * FROM songs WHERE UPPER(display_title) = UPPER($1)) songs \n';
+                   'FROM (SELECT * FROM songs WHERE display_title ILIKE $1) songs \n';
 
         if (req.query.artist) {
-            values.push(req.query.artist);
-            text = text + 'LEFT JOIN (SELECT * FROM artists WHERE UPPER(artist_text) = UPPER($2)) artists ON songs.display_artist = artists.artist_id \n';
+            values.push(prepareQuery(req.query.artist));
+            text = text + 'LEFT JOIN (SELECT * FROM artists WHERE artist_text ILIKE $2) artists ON songs.display_artist = artists.artist_id \n';
         } else {
             text += 'LEFT JOIN artists ON songs.display_artist = artists.artist_id \n';
         }
 
         if (req.query.album) {
-            values.push(req.query.album);
-            text += `LEFT JOIN (SELECT * FROM albums WHERE UPPER(display_title) = UPPER(${'$' + values.length})) albums \n` +
+            values.push(prepareQuery(req.query.album));
+            text += `LEFT JOIN (SELECT * FROM albums WHERE display_title ILIKE ${'$' + values.length}) albums \n` +
                     'ON songs.display_album = albums.album_id;';
         } else {
             text += 'LEFT JOIN albums ON songs.display_album = albums.album_id; \n';

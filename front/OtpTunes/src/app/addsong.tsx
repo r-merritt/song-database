@@ -30,39 +30,45 @@ export default function AddSong() {
   const [showUploadingSong, setShowUploadingSong] = useState<boolean>(false);
 
   const [matchedArtistId, setMatchedArtistId] = useState<string>('');
+  const [matchedArtistText, setMatchedArtistText] = useState<string>('');
   const [matchedAlbumId, setMatchedAlbumId] = useState<string>('');
+  const [matchedAlbumText, setMatchedAlbumText] = useState<string>('');
+  const [matchedAlbumYear, setMatchedAlbumYear] = useState<string>('');
 
   const [newSongId, setNewSongId] = useState<string>('');
+  const [showAreYouSure, setShowAreYouSure] = useState<boolean>(false);
+  const [showNoArtistOrAlbumError, setShowNoArtistOrAlbumError] = useState<boolean>(false);
 
   const titleRef = useRef<TextInput>(null);
   const artistRef = useRef<TextInput>(null);
   const albumRef = useRef<TextInput>(null);
   const albumReleaseRef = useRef<TextInput>(null);
 
-  function resetFields() {
+  function resetMatchedData() {
+    setMatchedArtistId('');
+    setMatchedAlbumId('');
+    setMatchedArtistText('');
+    setMatchedAlbumText('');
+    setMatchedAlbumYear('');
+
+    setShowUploadingSong(false);
+    setShowVerifySong(true);
+    setShowAreYouSure(false);
+  }
+
+  function resetTextField() {
     setNewTitle('');
     setNewArtist('');
     setNewAlbum('');
     setNewAlbumYear('');
-
-    setMatchedArtistId('');
-    setMatchedAlbumId('');
-
-    setShowUploadingSong(false);
+    
     setShowAlbumReleaseYear(false);
-    setShowVerifySong(true);
 
     titleRef.current?.clear();
     artistRef.current?.clear();
     albumRef.current?.clear();
     albumReleaseRef.current?.clear();
   }
-
-  useEffect(() => {
-    if (matchedAlbumId && showUploadingSong) {
-      uploadSong();
-    }
-  }, [matchedAlbumId, showUploadingSong]);
 
   function onChangeText(type : string, text : string) {
     switch(type) {
@@ -90,6 +96,7 @@ export default function AddSong() {
   }, [newAlbum])
 
   function uploadSong() {
+    setShowUploadingSong(true);
     // we're finally here. Egypt.
     console.log('uploading new song');
     try {
@@ -113,7 +120,8 @@ export default function AddSong() {
         console.log(data.rows[0]['insert_new_song']);
         console.log('song uploaded');
         setNewSongId(data.rows[0]['insert_new_song']);
-        resetFields();
+        resetMatchedData();
+        resetTextField();
       });
 
     } catch (err) { console.log(err);
@@ -122,19 +130,39 @@ export default function AddSong() {
   }
 
   function verifySongPress() {
-    try {
-      fetch(`http://localhost:3000/findsongwithtitle?title=${newTitle}&artist=${newArtist}&album=${newAlbum}`)
-      .then((result) => {return result.json();})
-      .then((data) => {
-        console.log('song result ', data.rows);
-        setSearchResults(data.rows);
-        if (data.rows.length > 0) {
-          setShowSongList(true);
-        } else {
-          getArtist();
-        }
-        })
-    } catch (err) { console.log(err); }
+    if (!newArtist && !newAlbum) {
+      setShowNoArtistOrAlbumError(true);
+    } else {
+      setShowNoArtistOrAlbumError(false);
+      try {
+        fetch(`http://localhost:3000/findsongwithtitle?title=${newTitle}&artist=${newArtist}&album=${newAlbum}`)
+        .then((result) => {return result.json();})
+        .then((data) => {
+          console.log('song result ', data.rows);
+
+          var results = [];
+
+          for (var result of data.rows) {
+            if ((!result['artist_text']) && result['display_artist']) {
+              // The artist didn't match search input
+              continue;
+            } else if ((!result['album_title']) && result['display_album']) {
+              // The album didn't match search input
+              continue;
+            } else {
+              results.push(result);
+            }
+          }
+
+          setSearchResults(results);
+          if (results.length > 0) {
+            setShowSongList(true);
+          } else {
+            getArtist();
+          }
+          })
+      } catch (err) { console.log(err); }
+    }
   }
 
   function getArtist() {
@@ -180,7 +208,8 @@ export default function AddSong() {
 
 function getAlbum() {
       if (!newAlbum) {
-        uploadSong();
+        setShowAreYouSure(true);
+        setShowVerifySong(false);
       }
       try {
       fetch(`http://localhost:3000/getsongsbyalbumname?name=${newAlbum}&limit=5`)
@@ -195,6 +224,7 @@ function getAlbum() {
             resultsObject[row.album_id].songs = [];
             resultsObject[row.album_id].artist = row.artist_text;
             resultsObject[row.album_id].title = row.album_title;
+            resultsObject[row.album_id].year = row.release_year;
           }
           
           existing = resultsObject[row.album_id].songs;
@@ -214,8 +244,8 @@ function getAlbum() {
         if (resultsArray.length > 0) {
           setShowAlbumList(true);
         } else {
-          setShowUploadingSong(true);
-          uploadSong();
+          setShowAreYouSure(true);
+          setShowVerifySong(false);
         }
       })
     } catch (err) { console.log(err); }
@@ -229,16 +259,20 @@ function getAlbum() {
     });
   }
 
-  function artistVerify(artistId : string) {
-    setMatchedArtistId(artistId);
+  function artistVerify(artist) {
+    setMatchedArtistId(artist[0]);
+    setMatchedArtistText(artist[1].artist);
     setShowArtistList(false);
     getAlbum();
   }
 
-  function albumVerify(albumId : string) {
-    setMatchedAlbumId(albumId);
+  function albumVerify(album) {
+    setMatchedAlbumId(album[0]);
+    setMatchedAlbumText(album[1].title);
+    setMatchedAlbumYear(album[1].year);
     setShowAlbumList(false);
-    setShowUploadingSong(true);
+    setShowAreYouSure(true);
+    setShowVerifySong(false);
   }
 
   function noSongMatch() {
@@ -253,8 +287,8 @@ function getAlbum() {
 
   function noAlbumMatch() {
     setShowAlbumList(false);
-    setShowUploadingSong(true);
-    uploadSong();
+    setShowAreYouSure(true);
+    setShowVerifySong(false);
   }
 
   function goToSong() {
@@ -301,29 +335,20 @@ function getAlbum() {
         </Fragment>
       }
       { showVerifySong &&
-        <ActionButton title='Verify song' onPress={verifySongPress}/>
+        <View style={styles.button}>
+          <ActionButton title='Verify song' onPress={verifySongPress}/>
+        </View>
+      }
+      { showNoArtistOrAlbumError && 
+        <Text>The song must have an artist or album</Text>
       }
       { showUploadingSong &&
         <Text style={styles.matchText}>Okay, uploading new song...</Text>
-      }
-      { newSongId &&
-        <ActionButton title='Go to added song' onPress={goToSong} />
       }
       {showSongList &&
         ( <View style={styles.songsContainer}>
             <Text style={styles.matchText}>Do any of these results match your song?</Text>
             { searchResults.map((result, key) => {
-
-              // The artist didn't match search input
-              if ((!result['artist_text']) && result['display_artist']) {
-                return (<Fragment key={key}></Fragment>);
-              }
-
-              // The album didn't match search input
-              if ((!result['album_title']) && result['display_album']) {
-                return (<Fragment key={key}></Fragment>);
-              }
-
               return (
                   <SongCard
                     key={key}
@@ -352,13 +377,13 @@ function getAlbum() {
                     key={key}
                     artist={result[1].artist}
                     songs={result[1].songs}
-                    onVerify={() => artistVerify(result[0])} />
+                    onVerify={() => artistVerify(result)} />
                 );
               })
 
               }
             </View>
-            <ActionButton title='No, none of these match' onPress={noArtistMatch} />
+              <ActionButton title='No, none of these match' onPress={noArtistMatch} />
             </View>
           )
       }
@@ -375,15 +400,43 @@ function getAlbum() {
                     album={result[1].title}
                     artist={result[1].artist}
                     songs={result[1].songs}
-                    onVerify={() => albumVerify(result[0])} />
+                    year={result[1].year}
+                    onVerify={() => albumVerify(result)} />
                 );
               })
 
               }
             </View>
-            <ActionButton title='No, none of these match' onPress={noAlbumMatch} />
+              <ActionButton title='No, none of these match' onPress={noAlbumMatch} />
             </View>
           )
+      }
+      { showAreYouSure && (
+        <View style={styles.container}>
+          <Text>Add song with the following information?</Text>
+          <Text>Please make sure everything is spelled and capitalized correctly!</Text>
+          <Text>Title: {newTitle}</Text>
+          {(matchedArtistText || newArtist) &&
+            <Text>Artist: {matchedArtistText ? matchedArtistText : newArtist}</Text>
+          }
+          {(matchedAlbumText || newAlbum) && 
+            <Text>Album: {matchedAlbumText ? matchedAlbumText : newAlbum}</Text>
+          }
+          {(matchedAlbumYear || newAlbumYear) &&
+            <Text>Release year: {matchedAlbumYear ? matchedAlbumYear : newAlbumYear}</Text>
+          }
+          <View style={styles.buttonContainer}>
+            <View style={styles.button}>
+              <ActionButton title='Yes, add!' onPress={uploadSong} />
+            </View>
+            <View style={styles.button}>
+              <ActionButton title={'No, don\'t add'} onPress={resetMatchedData} />
+            </View>
+          </View>
+        </View>
+      )}
+      { newSongId &&
+        <ActionButton title='Go to added song' onPress={goToSong} />
       }
     </ScrollView>
   );
@@ -418,6 +471,9 @@ const styles = StyleSheet.create({
   },
   button: {
     padding: 15,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
   },
   matchText: {
     fontSize: 24,
