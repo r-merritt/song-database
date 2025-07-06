@@ -21,11 +21,17 @@ router.get('/', async function(req, res, next) {
         database: 'otptunes',
         })
 
+        function prepareQuery(queryText) {
+            return '%' + queryText.split(' ').join('%') + '%';
+        }
+
         const values = [
-            req.query.tag,
+            prepareQuery(req.query.tag),
         ];
 
-        var text = 'SELECT * FROM tags WHERE UPPER(tag_text) = UPPER($1)';
+
+
+        var text = 'SELECT * FROM tags WHERE tag_text ILIKE $1';
 
         const query = {
             text: text,

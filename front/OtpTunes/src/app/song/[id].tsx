@@ -40,6 +40,24 @@ export default function Song() {
 
   }, [id]);
 
+  function updateTags(tag) {
+    console.log(tag.tag_id, ' ', tag.tag_text, ' ', tag.tag_type);
+      switch(tag['tag_type']) {
+        case 'mood':
+          setMoodTags([...moodTags, tag]);
+          break;
+        case 'theme':
+          setThemeTags([...themeTags, tag]);
+          break;
+        case 'meta':
+          setMetaTags([...metaTags, tag]);
+          break;
+        case 'fandom':
+          setFandomTags([...fandomTags, tag]);
+          break;
+     }
+  }
+
   useEffect(() => {
     const mood = [];
     const theme = [];
@@ -84,7 +102,7 @@ export default function Song() {
         </View>
         }
 
-        <AddTag id={id} songOrPlaylist='song' />
+        <AddTag id={id} songOrPlaylist='song' getNewTag={updateTags} />
 
         <View style={styles.tagContainer}>
           <Text style={styles.title}>Tags</Text>

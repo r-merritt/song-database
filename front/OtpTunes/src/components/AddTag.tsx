@@ -5,7 +5,7 @@ import Input from './Input';
 import ActionButton from './ActionButton';
 import { Picker } from '@react-native-picker/picker';
 
-export default function TagsCard({id, songOrPlaylist} : {id : string, songOrPlaylist : string}) {
+export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string, songOrPlaylist : string, getNewTag : Function}) {
   const [tagText, setTagText] = useState('');
   const [tagType, setTagType] = useState('');
 
@@ -34,6 +34,8 @@ export default function TagsCard({id, songOrPlaylist} : {id : string, songOrPlay
     }
   }
 
+
+
   function getTag() {
     setShowTagMatch(false);
     console.log('checking for tag ', tagText);
@@ -54,36 +56,64 @@ export default function TagsCard({id, songOrPlaylist} : {id : string, songOrPlay
     } catch (err) { console.log(err); }
   }
 
-  function matchedTag(tagId : string) {
-    console.log('matched ', tagId);
+  function matchedTag(tag) {
+    console.log('matched ', tag);
     setShowTagMatch(false);
-    addExistingSongTag(tagId);
+    if (songOrPlaylist == 'song') {
+      addExistingSongTag(tag);
+    } else if (songOrPlaylist == 'playlist') {
+      addExistingPlaylistTag(tag);
+    } else {
+      console.log('song or playlist wasn\'t song or playlist');
+    }
   }
 
-  function addExistingSongTag(tagId : string) {
-    console.log('add ', tagId);
+  function addExistingSongTag(tag) {
+    console.log('add to song ', tag);
     try {
-      fetch(`http://localhost:3000/addexistingtagtosong?songId=${id}&tagId=${tagId}`)
+      fetch(`http://localhost:3000/addexistingtagtosong?songId=${id}&tagId=${tag.tag_id}`)
       .then((result) => {return result.json();})
       .then((data) => {
         console.log('add result ', data.rows);
+        getNewTag(tag);
       })
     } catch (err) { console.log(err); }
   }
 
   function addNewSongTag() {
-    console.log('add ', tagText, ' ', tagType);
+    console.log('add to song ', tagText, ' ', tagType);
     try {
       fetch(`http://localhost:3000/addnewtagtosong?id=${id}&tag=${tagText}&type=${tagType}`)
       .then((result) => {return result.json();})
       .then((data) => {
         console.log('add result ', data.rows);
+        getNewTag({tag_id: data.rows[0].add_tag_to_song, tag_text: tagText, tag_type: tagType});
+      })
+    } catch (err) { console.log(err); }
+  }
+
+  function addExistingPlaylistTag(tag) {
+    console.log('add to playlist ', tag);
+    try {
+      fetch(`http://localhost:3000/addexistingtagtoplaylist?playlistId=${id}&tagId=${tag.tag_id}`)
+      .then((result) => {return result.json();})
+      .then((data) => {
+        console.log('add result ', data.rows);
+        getNewTag(tag);
       })
     } catch (err) { console.log(err); }
   }
 
   function addNewPlaylistTag() {
-    console.log('no function yet :)');
+    console.log('add to playlist ', tagText, ' ', tagType);
+    try {
+      fetch(`http://localhost:3000/addnewtagtoplaylist?id=${id}&tag=${tagText}&type=${tagType}`)
+      .then((result) => {return result.json();})
+      .then((data) => {
+        console.log('add result ', data.rows);
+        getNewTag({tag_id: data.rows[0].add_tag_to_playlist, tag_text: tagText, tag_type: tagType});
+      })
+    } catch (err) { console.log(err); }
   }
   
   return (
@@ -124,7 +154,7 @@ export default function TagsCard({id, songOrPlaylist} : {id : string, songOrPlay
           <View key={key} style={styles.tagBox}>
             <Text style={styles.tagTitle}>Tag: </Text> <Text style={styles.tag}>{tag.tag_text} </Text>
             <Text style={styles.tagTitle}>Type: </Text> <Text style={styles.tag}>{tag.tag_type}</Text>
-            <Pressable onPress={() => matchedTag(tag.tag_id)}>
+            <Pressable onPress={() => matchedTag(tag)}>
               <Text style={styles.thisOne}>This one</Text>
             </Pressable>
           </View>

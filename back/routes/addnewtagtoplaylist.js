@@ -3,15 +3,17 @@ var Client = pg.Client;
 var express = require('express');
 var router = express.Router();
 
-/* GET songs by artist name listing. */
+/* GET add new tag to playlist listing. */
 router.get('/', async function(req, res, next) {
-        console.log("Get songs by artist name");
+        console.log("Add new tag to playlist");
 
-        if (!req.query.name) {
+        if (!req.query.id || !req.query.tag || !req.query.type) {
             return;
         }
 
-        console.log(req.query.name);
+        console.log(req.query.id);
+        console.log(req.query.tag);
+        console.log(req.query.type);
 
         const client = new Client({
         user: 'postgres',
@@ -21,23 +23,13 @@ router.get('/', async function(req, res, next) {
         database: 'otptunes',
         })
 
-        function prepareQuery(queryText) {
-            return '%' + queryText.split(' ').join('%') + '%';
-        }
-
         const values = [
-            prepareQuery(req.query.name),
+            req.query.id,
+            req.query.tag,
+            req.query.type,
         ];
 
-        if (req.query.limit) {
-            values.push(req.query.limit);
-        } else {
-            values.push(5);
-        }
-
-        var text = 'SELECT artist_id, artist_text, display_title FROM (SELECT * FROM artists WHERE artist_text ILIKE $1) artists \n' +
-                   'JOIN LATERAL (SELECT * FROM songs WHERE songs.display_artist = artists.artist_id LIMIT $2) songs \n' +
-                   'ON songs.display_artist = artists.artist_id;';
+        var text = 'SELECT add_tag_to_playlist($1, $2, $3)';
 
         const query = {
             text: text,

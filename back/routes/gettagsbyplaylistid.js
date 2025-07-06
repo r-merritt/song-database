@@ -3,15 +3,15 @@ var Client = pg.Client;
 var express = require('express');
 var router = express.Router();
 
-/* GET songs by artist name listing. */
+/* GET tags by playlist id listing. */
 router.get('/', async function(req, res, next) {
-        console.log("Get songs by artist name");
+        console.log("Get tags by playlist id");
 
-        if (!req.query.name) {
+        if (!req.query.id) {
             return;
         }
 
-        console.log(req.query.name);
+        console.log(req.query.id);
 
         const client = new Client({
         user: 'postgres',
@@ -21,23 +21,13 @@ router.get('/', async function(req, res, next) {
         database: 'otptunes',
         })
 
-        function prepareQuery(queryText) {
-            return '%' + queryText.split(' ').join('%') + '%';
-        }
-
         const values = [
-            prepareQuery(req.query.name),
+            req.query.id,
         ];
 
-        if (req.query.limit) {
-            values.push(req.query.limit);
-        } else {
-            values.push(5);
-        }
-
-        var text = 'SELECT artist_id, artist_text, display_title FROM (SELECT * FROM artists WHERE artist_text ILIKE $1) artists \n' +
-                   'JOIN LATERAL (SELECT * FROM songs WHERE songs.display_artist = artists.artist_id LIMIT $2) songs \n' +
-                   'ON songs.display_artist = artists.artist_id;';
+        var text = 'SELECT playlist_tags.tag_id, tag_type, tag_text FROM \n' +
+                   '(SELECT * FROM playlist_tags WHERE playlist_id = $1) playlist_tags \n' +
+                   'JOIN tags on tags.tag_id = playlist_tags.tag_id;';
 
         const query = {
             text: text,

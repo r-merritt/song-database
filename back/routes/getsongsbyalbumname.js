@@ -21,8 +21,12 @@ router.get('/', async function(req, res, next) {
         database: 'otptunes',
         })
 
+        function prepareQuery(queryText) {
+            return '%' + queryText.split(' ').join('%') + '%';
+        }
+
         const values = [
-            req.query.name,
+            prepareQuery(req.query.name),
         ];
 
 
@@ -33,7 +37,7 @@ router.get('/', async function(req, res, next) {
         }
 
         var text = 'SELECT album_id, release_year, songs.display_title as song_title, albums.display_title as album_title, artist_text \n' +
-                   'FROM (SELECT * FROM albums WHERE UPPER(display_title) = UPPER($1)) albums \n' +
+                   'FROM (SELECT * FROM albums WHERE display_title ILIKE $1) albums \n' +
                    'JOIN LATERAL (SELECT * FROM songs WHERE songs.display_album = albums.album_id LIMIT $2) songs \n' +
                    'ON songs.display_album = albums.album_id \n' +
                    'JOIN artists on artists.artist_id = albums.display_artist;';

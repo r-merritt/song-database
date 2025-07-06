@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, Pressable, ScrollView } from 'react-native';
 import { useState, useEffect } from 'react';
 import { DataTable } from 'react-native-paper';
 import { useRouter } from 'expo-router';
@@ -7,6 +7,8 @@ import ActionButton from '../components/ActionButton';
 import Input from '../components/Input';
 
 const { width } = Dimensions.get('window')
+
+// add option to search either songs or playlists
 
 export default function Search({ } : { }) {
     const isFocused = useIsFocused();
@@ -17,8 +19,11 @@ export default function Search({ } : { }) {
     const [album, setAlbum] = useState('');
     const [tags, setTags] = useState('');
 
-    const [searchResults, setSearchResults] = useState<Array<Object>>([]);
-    const [showResults, setShowResults] = useState<boolean>(false);
+    const [songSearchResults, setSongSearchResults] = useState<Array<Object>>([]);
+    const [showSongResults, setShowSongResults] = useState<boolean>(false);
+
+    const [playlistSearchResults, setPlaylistSearchResults] = useState<Array<Object>>([]);
+    const [showPlaylistResults, setShowPlaylistResults] = useState<boolean>(false);
 
     const [page, setPage] = useState<number>(0);
     const [numberOfItemsPerPageList] = useState([15, 30, 50]);
@@ -26,13 +31,25 @@ export default function Search({ } : { }) {
       numberOfItemsPerPageList[0]
     );
 
+    const [searchPlaylists, setSearchPlaylists] = useState<boolean>(false);
+    const [searchSongs, setSearchSongs] = useState<boolean>(true);
+
     const from = page * itemsPerPage;
-    const to = Math.min((page + 1) * itemsPerPage, searchResults.length);
+    const songTo = Math.min((page + 1) * itemsPerPage, songSearchResults.length);
+    const playlistTo = Math.min((page + 1) * itemsPerPage, playlistSearchResults.length);
 
     function goToSong(songId : string) {
       router.navigate({
         pathname: '/song/[id]',
         params: { id: songId }
+      });
+    }
+
+    function goToPlaylist(playlistId : string) {
+      console.log('go to playlist ', playlistId);
+      router.navigate({
+        pathname: '/playlist/[id]',
+        params: { id: playlistId }
       });
     }
 
@@ -69,45 +86,76 @@ export default function Search({ } : { }) {
   
 
   function onSearch() {
-    console.log('searching for ', title, ' ', artist, ' ', album);
-    try {
-      fetch(`http://localhost:3000/searchsongs?title=${title}&artist=${artist}&album=${album}&tags=${tags}`)
-      .then((result) => {return result.json();})
-      .then((data) => {
-        console.log('song result ', data.rows);
-        setSearchResults(data.rows);
-        setShowResults(true);
+    if (searchSongs) {
+      console.log('searching for songs with ', title, ' ', artist, ' ', album);
+      console.log(tags);
+      try {
+        fetch(`http://localhost:3000/searchsongs?title=${title}&artist=${artist}&album=${album}&tags=${tags}`)
+        .then((result) => {return result.json();})
+        .then((data) => {
+          console.log('song result ', data.rows);
+          setSongSearchResults(data.rows);
+          setShowSongResults(true);
         })
-    } catch (err) { console.log(err); }
+      } catch (err) { console.log(err); }
+    } else {
+      console.log('searching for playlists with tags');
+      console.log(tags);
+      try {
+        fetch(`http://localhost:3000/searchplaylistsbytags?tags=${tags}`)
+        .then((result) => {return result.json();})
+        .then((data) => {
+          console.log('playlist result ', data.rows);
+          setPlaylistSearchResults(data.rows);
+          setShowPlaylistResults(true);
+        })
+      } catch (err) { console.log(err); }
+    }
   }
 
   return (
-    <View>
+    <ScrollView>
       <View style={styles.container}>
-        <View style={styles.box}>
-            <View style={styles.section}>
-                <Input
-                  placeholder='title'
-                  type='title'
-                  onChangeText={onChangeText}
-                />
-            </View>
-            <View style={styles.section}>
-                <Input
-                  placeholder='artist'
-                  type='artist'
-                  onChangeText={onChangeText}
-                />
-            </View>
-            <View style={styles.section}>
-                <Input
-                  placeholder='album'
-                  type='album'
-                  onChangeText={onChangeText}
-                />
-            </View>
+        <View style={styles.button}>
+            <ActionButton title='Songs' onPress={() => {
+                setSearchSongs(true);
+                setSearchPlaylists(false);
+              }}/>
+        </View>
+        <View style={styles.button}>
+            <ActionButton title='Playlists' onPress={() => {
+                setSearchPlaylists(true);
+                setSearchSongs(false);
+              }}/>
         </View>
       </View>
+      { searchSongs && 
+        <View style={styles.container}>
+          <View style={styles.box}>
+              <View style={styles.section}>
+                  <Input
+                    placeholder='title'
+                    type='title'
+                    onChangeText={onChangeText}
+                  />
+              </View>
+              <View style={styles.section}>
+                  <Input
+                    placeholder='artist'
+                    type='artist'
+                    onChangeText={onChangeText}
+                  />
+              </View>
+              <View style={styles.section}>
+                  <Input
+                    placeholder='album'
+                    type='album'
+                    onChangeText={onChangeText}
+                  />
+              </View>
+          </View>
+        </View>
+      }
       <View style={styles.container}>
         <View style={styles.box}>
             <View style={styles.section}>
@@ -120,10 +168,10 @@ export default function Search({ } : { }) {
         </View>
       </View>
       <View style={styles.button}>
-            <ActionButton title='Search' onPress={onSearch}/>
+            <ActionButton title={`Search ${searchSongs? 'Songs' : 'Playlists'}`} onPress={onSearch}/>
       </View>
 
-      { showResults && 
+      { (showSongResults && searchSongs) &&
         <View>
           <DataTable>
             <DataTable.Header>
@@ -133,8 +181,8 @@ export default function Search({ } : { }) {
               <DataTable.Title numeric>Release Year</DataTable.Title>
             </DataTable.Header>
 
-            {searchResults.slice(from, to).map((result, key) => (
-              <DataTable.Row key={key}>
+            {songSearchResults.slice(from, songTo).map((result) => (
+              <DataTable.Row key={result['song_id']}>
                 <DataTable.Cell>
                   <Pressable onPress={() => goToSong(result['song_id'])}>
                     <Text>{result['song_title']}</Text>
@@ -156,9 +204,9 @@ export default function Search({ } : { }) {
 
             <DataTable.Pagination
               page={page}
-              numberOfPages={Math.ceil(searchResults.length / itemsPerPage)}
+              numberOfPages={Math.ceil(songSearchResults.length / itemsPerPage)}
               onPageChange={(page) => setPage(page)}
-              label={`${from + 1}-${to} of ${searchResults.length}`}
+              label={`${from + 1}-${songTo} of ${songSearchResults.length}`}
               numberOfItemsPerPageList={numberOfItemsPerPageList}
               numberOfItemsPerPage={itemsPerPage}
               onItemsPerPageChange={onItemsPerPageChange}
@@ -168,7 +216,41 @@ export default function Search({ } : { }) {
           </DataTable>
         </View>
       }
-    </View>
+
+      { (showPlaylistResults && searchPlaylists) &&
+        <View>
+          <DataTable>
+            <DataTable.Header>
+              <DataTable.Title>Title</DataTable.Title>
+              <DataTable.Title>Artist</DataTable.Title>
+            </DataTable.Header>
+
+            {playlistSearchResults.slice(from, playlistTo).map((result) => (
+              <DataTable.Row key={result['playlist_id']}>
+                <DataTable.Cell>
+                  <Pressable onPress={() => goToPlaylist(result['playlist_id'])}>
+                    <Text>{result['title']}</Text>
+                  </Pressable>
+                </DataTable.Cell>
+                <DataTable.Cell>{result['artist']}</DataTable.Cell>
+              </DataTable.Row>
+            ))}
+
+            <DataTable.Pagination
+              page={page}
+              numberOfPages={Math.ceil(playlistSearchResults.length / itemsPerPage)}
+              onPageChange={(page) => setPage(page)}
+              label={`${from + 1}-${playlistTo} of ${playlistSearchResults.length}`}
+              numberOfItemsPerPageList={numberOfItemsPerPageList}
+              numberOfItemsPerPage={itemsPerPage}
+              onItemsPerPageChange={onItemsPerPageChange}
+              showFastPaginationControls
+              selectPageDropdownLabel={'Rows per page'}
+            />
+          </DataTable>
+        </View>
+      }
+    </ScrollView>
   );
 }
 
