@@ -38,12 +38,12 @@ const styles = StyleSheet.create({
   artistName: {
     borderBottomWidth: 1,
     borderBottomColor: 'rgb(128, 128, 128)',
-    color: 'rgb(68, 150, 238)',
-    fontSize: 18,
+    fontSize: 16,
     paddingLeft: 15,
     paddingRight: 15,
     paddingBottom: 10,
     paddingTop: 10,
+    fontFamily: "DMMono_400Regular",
   },
   label: {
     color: 'gray',
@@ -52,10 +52,12 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     paddingBottom: 5,
     paddingTop: 5,
+    fontFamily: "DMMono_400Regular",
   },
   song: {
     paddingLeft: 15,
     paddingRight: 15,
     paddingBottom: 3,
+    fontFamily: "DMMono_400Regular",
   }
 });

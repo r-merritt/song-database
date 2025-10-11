@@ -8,7 +8,8 @@ export default function RootLayout() {
     <Header />
     <Stack 
       screenOptions={{
-        headerShown: false
+        headerShown: false,
+        contentStyle: {backgroundColor: 'rgba(235, 235, 235, 1)'},
       }}
     />
   </PaperProvider>

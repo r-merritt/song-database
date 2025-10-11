@@ -3,9 +3,16 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Dimensions, ScrollView } from 'react-native';
 
+import { useFonts } from "expo-font";
+import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
+
 import DisplayAlbumAndSongs from '@/src/components/DisplayAlbumAndSongs';
 
 export default function Artist() {
+  const [fontsLoaded, error] = useFonts({
+    DMMono_400Regular,
+  });
+
   const { id } = useLocalSearchParams();
 
   const [songResults, setSongResults] = useState([]);
@@ -54,7 +61,8 @@ export default function Artist() {
           resultsObject[row.display_album] = {};
           resultsObject[row.display_album].songs = [];
           resultsObject[row.display_album].title = row.album_title;
-          resultsObject[row.display_album].year= row.release_year;
+          resultsObject[row.display_album].year = row.release_year;
+          resultsObject[row.display_album].id = row.display_album;
         }
       
       existing = resultsObject[row.display_album].songs;
@@ -73,7 +81,7 @@ export default function Artist() {
         {artistResults &&
           <View>
             <Text style={styles.title}>{artistResults['artist_text']}</Text>
-            <Text>Songs: </Text>
+            <Text style={styles.subtitle}>Songs: </Text>
           </View>
         }
 
@@ -81,10 +89,10 @@ export default function Artist() {
           { Object.entries(songsByAlbum).map((result) => {
             if (result[0] != 'noAlbum') {
               return (
-                // <Text>Hi</Text>
                 <DisplayAlbumAndSongs
                   key={result[0]}
                   album={result[1].title}
+                  albumId={result[1].id}
                   artist={artistResults['artist_text']}
                   songs={result[1].songs}/>
               );
@@ -115,12 +123,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: 'gray',
     paddingBottom: 15,
+    fontFamily: "DMMono_400Regular",
   },
   subtitle: {
     fontSize: 20,
     color: 'gray',
+    fontFamily: "DMMono_400Regular",
+
   },
   information: {
     padding: 12,

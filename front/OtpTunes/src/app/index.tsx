@@ -1,13 +1,20 @@
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
 
+import { useFonts } from "expo-font";
+import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
+
 const { width } = Dimensions.get('window')
 
 export default function Index() {
 
+  const [fontsLoaded, error] = useFonts({
+    DMMono_400Regular,
+  });
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>It's OTPTunes!</Text>
-      <Text>Choose something from the nav bar</Text>
+      <Text style={styles.text}>Choose something from the nav bar</Text>
     </View>
   );
 }
@@ -15,12 +22,14 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     padding: 24,
   },
   title: {
     fontSize: 32,
-    margin: 20,
-    color: 'gray',
+    marginBottom: 20,
+    fontFamily: "DMMono_400Regular",
+  },
+  text: {
+    fontFamily: "DMMono_400Regular",
   },
 });

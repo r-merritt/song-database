@@ -51,6 +51,9 @@ export default function AddSongFlow() {
     setMatchedAlbumText('');
     setMatchedAlbumYear('');
 
+    setShowSongList(false);
+    setShowArtistList(false);
+    setShowAlbumList(false);
     setShowUploadingSong(false);
     setShowVerifySong(true);
     setShowAreYouSure(false);
@@ -97,6 +100,7 @@ export default function AddSongFlow() {
 
   function uploadSong() {
     setShowUploadingSong(true);
+
     // we're finally here. Egypt.
     console.log('uploading new song');
     try {
@@ -130,6 +134,7 @@ export default function AddSongFlow() {
   }
 
   function verifySongPress() {
+    resetMatchedData();
     if (!newArtist && !newAlbum) {
       setShowNoArtistOrAlbumError(true);
     } else {
@@ -302,162 +307,166 @@ function getAlbum() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Add a song</Text>
+    <ScrollView>
+      <View style={styles.container}>
+        <Text style={styles.title}>Add a song</Text>
 
-      <Text style={styles.label}>Title:</Text>
-      <Input
-          ref={titleRef}
-          placeholder='title'
-          type='title'
-          onChangeText={onChangeText}
-      />
-      <Text style={styles.label}>Artist:</Text>
-      <Input
-          ref={artistRef}
-          placeholder='artist'
-          type='artist'
-          onChangeText={onChangeText}
-      />
-      <Text style={styles.label}>Album:</Text>
-      <Input
-          ref={albumRef}
-          placeholder='album'
-          type='album'
-          onChangeText={onChangeText}
-      />
-      { showAlbumReleaseYear && 
-        <Fragment>
-          <Text style={styles.label}>Album Release Year:</Text>
-          <Input
-              ref={albumReleaseRef}
-              placeholder='album'
-              type='albumYear'
-              onChangeText={onChangeText}
-          />
-        </Fragment>
-      }
-      { showVerifySong &&
-        <View style={styles.button}>
-          <ActionButton title='Verify song' onPress={verifySongPress}/>
-        </View>
-      }
-      { showNoArtistOrAlbumError && 
-        <Text>The song must have an artist or album</Text>
-      }
-      { showUploadingSong &&
-        <Text style={styles.matchText}>Okay, uploading new song...</Text>
-      }
-      {showSongList &&
-        ( <View style={styles.songsContainer}>
-            <Text style={styles.matchText}>Do any of these results match your song?</Text>
-            { searchResults.map((result, key) => {
-              return (
-                  <SongCard
-                    key={key}
-                    title={result['song_title']}
-                    artist={result['artist_text']}
-                    album={result['album_title']}
-                    onVerify={() => onSongMatch(result['song_id'])}/>
-              );
-            })
-           }
-           <View style={styles.button}>
-            <ActionButton title='No, none of these match' onPress={noSongMatch} />
-           </View>
-        </View>
-      ) 
-      }
-
-      { showArtistList &&
-          (
-            <View style={styles.artistListContainer}>
-            <Text style={styles.matchText}>Are any of these artists the {newArtist} you intended?</Text>
-            <View style={styles.artistsContainer}>
-              { artistResults.map((result, key) => {
+        <Text style={styles.label}>Title:</Text>
+        <Input
+            ref={titleRef}
+            placeholder='title'
+            type='title'
+            onChangeText={onChangeText}
+        />
+        <Text style={styles.label}>Artist:</Text>
+        <Input
+            ref={artistRef}
+            placeholder='artist'
+            type='artist'
+            onChangeText={onChangeText}
+        />
+        <Text style={styles.label}>Album:</Text>
+        <Input
+            ref={albumRef}
+            placeholder='album'
+            type='album'
+            onChangeText={onChangeText}
+        />
+        { showAlbumReleaseYear && 
+          <Fragment>
+            <Text style={styles.label}>Album Release Year:</Text>
+            <Input
+                ref={albumReleaseRef}
+                placeholder='album'
+                type='albumYear'
+                onChangeText={onChangeText}
+            />
+          </Fragment>
+        }
+        { showVerifySong &&
+          <View style={styles.button}>
+            <ActionButton title='Verify song' onPress={verifySongPress}/>
+          </View>
+        }
+        { showNoArtistOrAlbumError && 
+          <Text>The song must have an artist or album</Text>
+        }
+        { showUploadingSong &&
+          <Text style={styles.matchText}>Okay, uploading new song...</Text>
+        }
+        {showSongList &&
+          ( <View style={styles.songsContainer}>
+              <Text style={styles.matchText}>Do any of these results match your song?</Text>
+              { searchResults.map((result, key) => {
                 return (
-                  <VerifyArtistAndSongs
-                    key={key}
-                    artist={result[1].artist}
-                    songs={result[1].songs}
-                    onVerify={() => artistVerify(result)} />
+                    <SongCard
+                      key={key}
+                      title={result['song_title']}
+                      artist={result['artist_text']}
+                      album={result['album_title']}
+                      onVerify={() => onSongMatch(result['song_id'])}/>
                 );
               })
-
-              }
-            </View>
-              <ActionButton title='No, none of these match' onPress={noArtistMatch} />
-            </View>
-          )
-      }
-
-      { showAlbumList &&
-          (
-            <View style={styles.artistListContainer}>
-            <Text style={styles.matchText}>Are any of these albums the {newAlbum} you intended?</Text>
-            <View style={styles.artistsContainer}>
-              { albumResults.map((result, key) => {
-                return (
-                  <VerifyAlbumAndSongs
-                    key={key}
-                    album={result[1].title}
-                    artist={result[1].artist}
-                    songs={result[1].songs}
-                    year={result[1].year}
-                    onVerify={() => albumVerify(result)} />
-                );
-              })
-
-              }
-            </View>
-              <ActionButton title='No, none of these match' onPress={noAlbumMatch} />
-            </View>
-          )
-      }
-      { showAreYouSure && (
-        <View style={styles.container}>
-          <Text>Add song with the following information?</Text>
-          <Text>Please make sure everything is spelled and capitalized correctly!</Text>
-          <Text>Title: {newTitle}</Text>
-          {(matchedArtistText || newArtist) &&
-            <Text>Artist: {matchedArtistText ? matchedArtistText : newArtist}</Text>
-          }
-          {(matchedAlbumText || newAlbum) && 
-            <Text>Album: {matchedAlbumText ? matchedAlbumText : newAlbum}</Text>
-          }
-          {(matchedAlbumYear || newAlbumYear) &&
-            <Text>Release year: {matchedAlbumYear ? matchedAlbumYear : newAlbumYear}</Text>
-          }
-          <View style={styles.buttonContainer}>
+            }
             <View style={styles.button}>
-              <ActionButton title='Yes, add!' onPress={uploadSong} />
-            </View>
-            <View style={styles.button}>
-              <ActionButton title={'No, don\'t add'} onPress={resetMatchedData} />
+              <ActionButton title='No, none of these match' onPress={noSongMatch} />
             </View>
           </View>
-        </View>
-      )}
-      { newSongId &&
-        <ActionButton title='Go to added song' onPress={goToSong} />
-      }
-    </View>
+        ) 
+        }
+
+        { showArtistList &&
+            (
+              <View style={styles.artistListContainer}>
+              <Text style={styles.matchText}>Are any of these artists the {newArtist} you intended?</Text>
+              <View style={styles.artistsContainer}>
+                { artistResults.map((result, key) => {
+                  return (
+                    <VerifyArtistAndSongs
+                      key={key}
+                      artist={result[1].artist}
+                      songs={result[1].songs}
+                      onVerify={() => artistVerify(result)} />
+                  );
+                })
+
+                }
+              </View>
+                <ActionButton title='No, none of these match' onPress={noArtistMatch} />
+              </View>
+            )
+        }
+
+        { showAlbumList &&
+            (
+              <View style={styles.artistListContainer}>
+              <Text style={styles.matchText}>Are any of these albums the {newAlbum} you intended?</Text>
+              <View style={styles.artistsContainer}>
+                { albumResults.map((result, key) => {
+                  return (
+                    <VerifyAlbumAndSongs
+                      key={key}
+                      album={result[1].title}
+                      artist={result[1].artist}
+                      songs={result[1].songs}
+                      year={result[1].year}
+                      onVerify={() => albumVerify(result)} />
+                  );
+                })
+
+                }
+              </View>
+                <ActionButton title='No, none of these match' onPress={noAlbumMatch} />
+              </View>
+            )
+        }
+        { showAreYouSure && (
+          <View style={styles.container}>
+            <Text style={styles.verifyText}>Add song with the following information?</Text>
+            <Text style={styles.verifyText} >Please make sure everything is spelled and capitalized correctly!</Text>
+            <Text style={styles.verifyText} >Title: {newTitle}</Text>
+            {(matchedArtistText || newArtist) &&
+              <Text style={styles.verifyText} >Artist: {matchedArtistText ? matchedArtistText : newArtist}</Text>
+            }
+            {(matchedAlbumText || newAlbum) && 
+              <Text style={styles.verifyText} >Album: {matchedAlbumText ? matchedAlbumText : newAlbum}</Text>
+            }
+            {(matchedAlbumYear || newAlbumYear) &&
+              <Text style={styles.verifyText}>Release year: {matchedAlbumYear ? matchedAlbumYear : newAlbumYear}</Text>
+            }
+            <View style={styles.buttonContainer}>
+              <View style={styles.button}>
+                <ActionButton title='Yes, add!' onPress={uploadSong} />
+              </View>
+              <View style={styles.button}>
+                <ActionButton title={'No, don\'t add'} onPress={resetMatchedData} />
+              </View>
+            </View>
+          </View>
+        )}
+        { newSongId &&
+          <ActionButton title='Go to added song' onPress={goToSong} />
+        }
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 20,
     flex: 1,
-    alignItems: "center",
-    padding: 24,
   },
   songsContainer: {
-    justifyContent: "center",
-    alignItems: "center",
     padding: 15,
     width: '90%',
   },
+  verifyText: {
+    fontFamily: "DMMono_400Regular",
+    paddingBottom: 6,
+  },
   artistListContainer: {
+    padding: 15,
     width: '90%',
   },
   artistsContainer: {
@@ -469,25 +478,25 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    margin: 20,
-    color: 'gray',
+    marginBottom: 20,
+    fontFamily: "DMMono_400Regular",
   },
   button: {
-    padding: 15,
+    paddingTop: 15,
+    paddingRight: 15,
   },
   buttonContainer: {
     flexDirection: 'row',
   },
   matchText: {
     fontSize: 24,
-    color: 'gray',
     textAlign: 'center',
+    fontFamily: "DMMono_400Regular",
   },
   label: {
     padding: 12,
-    fontSize: 18,
+    fontSize: 16,
     width: width - (width/4),
-    maxWidth: '85%',
-    color: 'gray',
+    fontFamily: "DMMono_400Regular",
   },
 });

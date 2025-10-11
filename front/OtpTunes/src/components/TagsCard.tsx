@@ -21,7 +21,7 @@ export default function TagsCard({title, tags} : {title : string, tags : Array<O
         {tags.map((tag, key) => {
           return (
             <Pressable onPress={() => goToTag(tag.tag_id)}>
-              <Text key={key}>{key == 0? '': ', '}{tag.tag_text}</Text>
+              <Text style={styles.tagText} key={key}>{key == 0? '': ', '}{tag.tag_text}</Text>
             </Pressable>
           );
         })}
@@ -35,11 +35,15 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     color: 'gray',
+    fontFamily: "DMMono_400Regular",
   },
   container: {
     marginTop: 10,
   },
   tagBox: {
     flexDirection: 'row',
+  },
+  tagText: {
+    fontFamily: "DMMono_400Regular",
   }
 });

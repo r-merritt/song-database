@@ -7,7 +7,14 @@ import { useRouter } from 'expo-router';
 import TagsCard from '../../components/TagsCard'
 import AddTag from '../../components/AddTag';
 
+import { useFonts } from "expo-font";
+import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
+
 export default function Playlist() {
+  const [fontsLoaded, error] = useFonts({
+    DMMono_400Regular,
+  });
+
   const { id } = useLocalSearchParams();
 
   const router = useRouter();
@@ -155,6 +162,7 @@ export default function Playlist() {
 const styles = StyleSheet.create({
   commentary: {
     paddingLeft: 24,
+    fontFamily: "DMMono_400Regular",
   },
   container: {
     flex: 1,
@@ -162,17 +170,18 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: 'gray',
     paddingBottom: 15,
+    fontFamily: "DMMono_400Regular",
   },
   song: {
     fontSize: 18,
-    color: 'gray',
+    fontFamily: "DMMono_400Regular",
   },
   subtitle: {
     fontSize: 20,
     color: 'gray',
     paddingBottom: 10,
+    fontFamily: "DMMono_400Regular",
   },
   songsContainer: {
     display: 'flex',

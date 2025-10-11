@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 
-export default function DisplayAlbumAndSongs({album, artist, songs} : {album: string, artist: string, songs: Array<Object>}) {
+export default function DisplayAlbumAndSongs({album, albumId, artist, songs} : {album: string, albumId: string, artist: string, songs: Array<Object>}) {
   const router = useRouter();
 
   function goToSong(songId : string) {
@@ -12,9 +12,18 @@ export default function DisplayAlbumAndSongs({album, artist, songs} : {album: st
     });
   }
 
+  function goToAlbum(albumId : string) {
+    router.navigate({
+      pathname: '/album/[id]',
+      params: { id: albumId }
+    });
+  }
+
   return (
     <View style={styles.container}>
-        <Text style={styles.albumName}>{album}</Text>
+        <Pressable onPress={() => goToAlbum(albumId)}>
+          <Text style={styles.albumName}>{album}</Text>
+        </Pressable>
         {artist && <Text style={styles.artistName}>by {artist}</Text>}
         <Text style={styles.label}>Songs:</Text>
         { songs.map((song) => {
@@ -42,17 +51,17 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
   },
   artistName: {
-    color: 'rgb(68, 150, 238)',
-    fontSize: 18,
+    fontSize: 16,
     paddingLeft: 15,
     paddingRight: 15,
+    fontFamily: "DMMono_400Regular",
   },
   albumName: {
-    color: 'rgb(68, 150, 238)',
-    fontSize: 18,
+    fontSize: 16,
     paddingLeft: 15,
     paddingRight: 15,
     paddingTop: 10,
+    fontFamily: "DMMono_400Regular",
   },
   label: {
     marginTop: 10,
@@ -64,10 +73,12 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     paddingBottom: 5,
     paddingTop: 5,
+    fontFamily: "DMMono_400Regular",
   },
   song: {
     paddingLeft: 15,
     paddingRight: 15,
     paddingBottom: 3,
+    fontFamily: "DMMono_400Regular",
   }
 });

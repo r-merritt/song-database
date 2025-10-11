@@ -4,9 +4,16 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Dimensions, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 
+import { useFonts } from "expo-font";
+import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
+
 import DisplayAlbumAndSongs from '@/src/components/DisplayAlbumAndSongs';
 
 export default function Album() {
+  const [fontsLoaded, error] = useFonts({
+    DMMono_400Regular,
+  });
+
   const { id } = useLocalSearchParams();
 
   const router = useRouter();
@@ -62,7 +69,7 @@ export default function Album() {
             console.log(result);
               return (
                 <Pressable onPress={() => goToSong(result[1].song_id)}>
-                  <Text>{result[1].song_title} by {result[1].artist_text}</Text>
+                  <Text style={styles.songText}>{result[1].song_title} by {result[1].artist_text}</Text>
                 </Pressable>
               );
           })
@@ -81,13 +88,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: 'gray',
     paddingBottom: 15,
+    fontFamily: "DMMono_400Regular",
   },
   subtitle: {
     fontSize: 20,
     color: 'gray',
     paddingBottom: 10,
+    fontFamily: "DMMono_400Regular",
   },
   songsContainer: {
     display: 'flex',
@@ -95,4 +103,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     maxWidth: '100%',
   },
+  songText: {
+    fontFamily: "DMMono_400Regular",
+  }
 });

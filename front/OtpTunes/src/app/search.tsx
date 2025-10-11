@@ -6,11 +6,18 @@ import { useIsFocused } from '@react-navigation/native';
 import ActionButton from '../components/ActionButton';
 import Input from '../components/Input';
 
+import { useFonts } from "expo-font";
+import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
+
 const { width } = Dimensions.get('window')
 
 // add option to search either songs or playlists
 
 export default function Search({ } : { }) {
+    const [fontsLoaded, error] = useFonts({
+      DMMono_400Regular,
+    });
+
     const isFocused = useIsFocused();
     const router = useRouter();
 
@@ -175,30 +182,30 @@ export default function Search({ } : { }) {
         <View>
           <DataTable>
             <DataTable.Header>
-              <DataTable.Title>Title</DataTable.Title>
-              <DataTable.Title>Artist</DataTable.Title>
-              <DataTable.Title>Album</DataTable.Title>
-              <DataTable.Title numeric>Release Year</DataTable.Title>
+              <DataTable.Title><Text style={styles.tableText}>Title</Text></DataTable.Title>
+              <DataTable.Title><Text style={styles.tableText}>Artist</Text></DataTable.Title>
+              <DataTable.Title><Text style={styles.tableText}>Album</Text></DataTable.Title>
+              <DataTable.Title numeric><Text style={styles.tableText}>Release Year</Text></DataTable.Title>
             </DataTable.Header>
 
             {songSearchResults.slice(from, songTo).map((result) => (
               <DataTable.Row key={result['song_id']}>
                 <DataTable.Cell>
                   <Pressable onPress={() => goToSong(result['song_id'])}>
-                    <Text>{result['song_title']}</Text>
+                    <Text style={styles.tableText}>{result['song_title']}</Text>
                   </Pressable>
                 </DataTable.Cell>
                 <DataTable.Cell>
                   <Pressable onPress={() => goToArtist(result['display_artist'])}>
-                    <Text>{result['artist_text']}</Text>
+                    <Text style={styles.tableText}>{result['artist_text']}</Text>
                   </Pressable>
                 </DataTable.Cell>
                 <DataTable.Cell>
                   <Pressable onPress={() => goToAlbum(result['display_album'])}>
-                    <Text>{result['album_title']}</Text>
+                    <Text style={styles.tableText}>{result['album_title']}</Text>
                   </Pressable>
                 </DataTable.Cell>
-                <DataTable.Cell numeric>{result['release_year']}</DataTable.Cell>
+                <DataTable.Cell numeric><Text style={styles.tableText}>{result['release_year']}</Text></DataTable.Cell>
               </DataTable.Row>
             ))}
 
@@ -221,18 +228,18 @@ export default function Search({ } : { }) {
         <View>
           <DataTable>
             <DataTable.Header>
-              <DataTable.Title>Title</DataTable.Title>
-              <DataTable.Title>Artist</DataTable.Title>
+              <DataTable.Title><Text style={styles.tableText}>Title</Text></DataTable.Title>
+              <DataTable.Title><Text style={styles.tableText}>Artist</Text></DataTable.Title>
             </DataTable.Header>
 
             {playlistSearchResults.slice(from, playlistTo).map((result) => (
               <DataTable.Row key={result['playlist_id']}>
                 <DataTable.Cell>
                   <Pressable onPress={() => goToPlaylist(result['playlist_id'])}>
-                    <Text>{result['title']}</Text>
+                    <Text style={styles.tableText}>{result['title']}</Text>
                   </Pressable>
                 </DataTable.Cell>
-                <DataTable.Cell>{result['artist']}</DataTable.Cell>
+                <DataTable.Cell><Text style={styles.tableText}>{result['artist']}</Text></DataTable.Cell>
               </DataTable.Row>
             ))}
 
@@ -299,4 +306,8 @@ const styles = StyleSheet.create({
     color: 'rgb(68, 150, 238)',
     fontSize: 16,
   },
+  
+  tableText: {
+    fontFamily: "DMMono_400Regular",
+  }
 });

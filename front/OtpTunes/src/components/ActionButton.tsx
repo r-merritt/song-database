@@ -3,14 +3,14 @@ import {
   Pressable, Text, View, StyleSheet
 } from 'react-native';
 
-
 export default function ActionButton({onPress, title}: {onPress : Function, title : string}) {
+
   return (
 <Pressable
     onPress={onPress}
     style={({pressed}) => [
       {
-        backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'rgb(68, 150, 238)',
+        backgroundColor: pressed ? 'rgba(194, 194, 194, 1)' : 'rgba(255, 255, 255, 1)',
       }, styles.buttonContainer,
     ]}
     underlayColor='rgb(68, 150, 238)'
@@ -25,15 +25,16 @@ export default function ActionButton({onPress, title}: {onPress : Function, titl
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    borderRadius: 25
+    borderRadius: 3
   },
   button: {
-    padding: 15,
+    padding: 10,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    borderWidth: 1,
   },
   buttonText: {
-    color: 'white',
-    fontSize: 18,
+    fontSize: 16,
+    fontFamily: "DMMono_400Regular",
   }
 });

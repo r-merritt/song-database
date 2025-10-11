@@ -5,7 +5,14 @@ import { StyleSheet, Text, View, ScrollView, Pressable } from 'react-native';
 import { DataTable } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 
+import { useFonts } from "expo-font";
+import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
+
 export default function Tag() {
+  const [fontsLoaded, error] = useFonts({
+    DMMono_400Regular,
+  });
+
   const router = useRouter();
   const { id } = useLocalSearchParams();
 
@@ -61,45 +68,57 @@ export default function Tag() {
     });
   }
 
+  function goToAlbum(albumId : string) {
+    router.navigate({
+      pathname: '/album/[id]',
+      params: { id: albumId }
+    });
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
      { tagResult && (
         <View>
           <Text style={styles.title}>{tagResult['tag_text']}</Text>
-          <Text>Type: {tagResult['tag_type']}</Text>
+          <Text style={styles.subtitle}>Type: {tagResult['tag_type']}</Text>
         </View>
      )}
 
-     <Text>Songs with this tag: </Text>
+     <Text style={styles.subtitle}>Songs with this tag: </Text>
 
      { songResults && 
         <View>
           <DataTable>
             <DataTable.Header>
-              <DataTable.Title>Title</DataTable.Title>
-              <DataTable.Title>Artist</DataTable.Title>
-              <DataTable.Title>Album</DataTable.Title>
-              <DataTable.Title numeric>Release Year</DataTable.Title>
+              <DataTable.Title><Text style={styles.tableText}>Title</Text></DataTable.Title>
+              <DataTable.Title><Text style={styles.tableText}>Artist</Text></DataTable.Title>
+              <DataTable.Title><Text style={styles.tableText}>Album</Text></DataTable.Title>
+              <DataTable.Title numeric><Text style={styles.tableText}>Release Year</Text></DataTable.Title>
             </DataTable.Header>
 
             {songResults.slice(from, to).map((result, key) => (
               <DataTable.Row key={key}>
                 <DataTable.Cell>
                   <Pressable onPress={() => goToSong(result['song_id'])}>
-                    <Text>{result['song_title']}</Text>
+                    <Text style={styles.tableText}>{result['song_title']}</Text>
                   </Pressable>
                 </DataTable.Cell>
                 <DataTable.Cell>
                   <Pressable onPress={() => goToArtist(result['display_artist'])}>
-                    <Text>{result['artist_text']}</Text>
+                    <Text style={styles.tableText}>{result['artist_text']}</Text>
                   </Pressable>
                 </DataTable.Cell>
-                <DataTable.Cell>{result['album_title']}</DataTable.Cell>
-                <DataTable.Cell numeric>{result['release_year']}</DataTable.Cell>
+                <DataTable.Cell>
+                  <Pressable onPress={() => goToAlbum(result['display_album'])}>
+                    <Text style={styles.tableText}>{result['album_title']}</Text>
+                  </Pressable>
+                </DataTable.Cell>
+                <DataTable.Cell numeric><Text style={styles.tableText}>{result['release_year']}</Text></DataTable.Cell>
               </DataTable.Row>
             ))}
 
             <DataTable.Pagination
+              style={styles.pagination}
               page={page}
               numberOfPages={Math.ceil(songResults.length / itemsPerPage)}
               onPageChange={(page) => setPage(page)}
@@ -126,7 +145,16 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: 'gray',
     paddingBottom: 15,
+    fontFamily: "DMMono_400Regular",
   },
+  subtitle: {
+    fontFamily: "DMMono_400Regular",
+  },
+  tableText: {
+    fontFamily: "DMMono_400Regular",
+  },
+  pagination: {
+    fontFamily: "DMMono_400Regular",
+  }
 });

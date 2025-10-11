@@ -1,12 +1,22 @@
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Pressable} from 'react-native';
+import { useRouter } from 'expo-router';
+
+import { useFonts } from "expo-font";
+import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 
 import TagsCard from '../../components/TagsCard'
 import AddTag from '../../components/AddTag';
 
 export default function Song() {
+  const [fontsLoaded, error] = useFonts({
+    DMMono_400Regular,
+  });
+
+  const router = useRouter();
+
   const { id } = useLocalSearchParams();
 
   // album_artist, album_artist_id, album_title, release_year, show_artist_or_album,
@@ -87,6 +97,20 @@ export default function Song() {
     setFandomTags(fandom);
   }, [tagResults]);
 
+    function goToArtist(artistId : string) {
+      router.navigate({
+        pathname: '/artist/[id]',
+        params: { id: artistId }
+      });
+    }
+
+    function goToAlbum(albumId : string) {
+      router.navigate({
+        pathname: '/album/[id]',
+        params: { id: albumId }
+      });
+    }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
         {songResults &&
@@ -94,10 +118,19 @@ export default function Song() {
         <Text style={styles.title}>{songResults.song_title}</Text>
         <Text style={styles.subtitle}>{songResults.show_artist_or_album == 'artist' ? 'by ' + songResults.song_artist : 'from ' + songResults.album_title}</Text>
         <View style={styles.information}>
-          {songResults.song_artist && <Text>Artist: {songResults.song_artist}</Text>}
-          {songResults.album_title && <Text>Album: {songResults.album_title}</Text>}
-          {songResults.album_artist && <Text>Album Artist: {songResults.album_artist}</Text>}
-          {songResults.release_year && <Text>Album Release Year: {songResults.release_year}</Text>}
+          {songResults.song_artist && 
+            <Pressable onPress={() => goToArtist(songResults['song_artist_id'])}>
+              <Text style={styles.infoText}>Artist: {songResults.song_artist}</Text>
+            </Pressable>}
+          {songResults.album_title &&
+            <Pressable onPress={() => goToAlbum(songResults['song_album_id'])}>
+              <Text style={styles.infoText}>Album: {songResults.album_title}</Text>
+            </Pressable>}
+          {songResults.album_artist &&
+            <Pressable onPress={() => goToArtist(songResults['album_artist_id'])}>
+              <Text style={styles.infoText}>Album Artist: {songResults.album_artist}</Text>
+            </Pressable>}
+          {songResults.release_year && <Text style={styles.infoText}>Album Release Year: {songResults.release_year}</Text>}
         </View>
         </View>
         }
@@ -123,14 +156,18 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: 'gray',
+    fontFamily: "DMMono_400Regular",
   },
   subtitle: {
     fontSize: 20,
     color: 'gray',
+    fontFamily: "DMMono_400Regular",
   },
   information: {
     padding: 12,
+  },
+  infoText: {
+    fontFamily: "DMMono_400Regular",
   },
   tagContainer: {
     flexDirection: 'column',

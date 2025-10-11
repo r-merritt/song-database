@@ -74,10 +74,11 @@ const styles = StyleSheet.create({
   label: {
     color: 'gray',
     fontSize: 12,
+    fontFamily: "DMMono_400Regular",
   },
 
   content: {
-    color: 'rgb(68, 150, 238)',
     fontSize: 16,
+    fontFamily: "DMMono_400Regular",
   },
 });

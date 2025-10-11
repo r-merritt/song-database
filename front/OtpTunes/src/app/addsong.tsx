@@ -2,9 +2,17 @@ import { StyleSheet, Dimensions, ScrollView } from 'react-native';
 
 import AddSongFlow from '../components/AddSongFlow';
 
+import { useFonts } from "expo-font";
+import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
+
 const { width } = Dimensions.get('window')
 
 export default function AddSong() { 
+
+  const [fontsLoaded, error] = useFonts({
+    DMMono_400Regular,
+  });
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <AddSongFlow />
@@ -15,12 +23,9 @@ export default function AddSong() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     padding: 24,
   },
   songsContainer: {
-    justifyContent: "center",
-    alignItems: "center",
     padding: 15,
     width: '90%',
   },

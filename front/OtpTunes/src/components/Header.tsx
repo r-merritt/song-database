@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import ActionButton from './ActionButton';
 
+
 export default function Header() {
   const router = useRouter();
   
@@ -38,8 +39,9 @@ export default function Header() {
 
 const styles = StyleSheet.create({
   container: {
-    borderBottomColor: 'rgb(165, 165, 165)',
-    borderBottomWidth: 2,
+    backgroundColor: 'rgba(194, 194, 194, 1)',
+    borderBottomColor: 'rgba(0, 0, 0, 1)',
+    borderBottomWidth: 1,
   },
   button: {
     paddingRight: 5,

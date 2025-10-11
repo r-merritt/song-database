@@ -7,7 +7,9 @@ export default function VerifyAlbumAndSongs({album, artist, year, songs, onVerif
   return (
     <View style={styles.container}>
         <Text style={styles.artistName}>{album} by {artist}</Text>
-        <Text style={styles.artistName}>released in {year}</Text>
+        { year && (
+          <Text style={styles.releaseYear}>released in {year}</Text>
+        )}
         <Text style={styles.label}>Song selection:</Text>
         { songs.map((song, key) => {
             return (
@@ -39,12 +41,22 @@ const styles = StyleSheet.create({
   artistName: {
     borderBottomWidth: 1,
     borderBottomColor: 'rgb(128, 128, 128)',
-    color: 'rgb(68, 150, 238)',
-    fontSize: 18,
+    fontSize: 16,
     paddingLeft: 15,
     paddingRight: 15,
     paddingBottom: 10,
     paddingTop: 10,
+    fontFamily: "DMMono_400Regular",
+  },
+  releaseYear: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgb(128, 128, 128)',
+    fontSize: 16,
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingBottom: 10,
+    paddingTop: 10,
+    fontFamily: "DMMono_400Regular",
   },
   label: {
     color: 'gray',
@@ -53,10 +65,12 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     paddingBottom: 5,
     paddingTop: 5,
+    fontFamily: "DMMono_400Regular",
   },
   song: {
     paddingLeft: 15,
     paddingRight: 15,
     paddingBottom: 3,
+    fontFamily: "DMMono_400Regular",
   }
 });
