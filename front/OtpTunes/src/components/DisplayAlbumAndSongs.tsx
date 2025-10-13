@@ -21,18 +21,23 @@ export default function DisplayAlbumAndSongs({album, albumId, artist, songs} : {
 
   return (
     <View style={styles.container}>
+      {albumId && (
         <Pressable onPress={() => goToAlbum(albumId)}>
           <Text style={styles.albumName}>{album}</Text>
         </Pressable>
-        {artist && <Text style={styles.artistName}>by {artist}</Text>}
-        <Text style={styles.label}>Songs:</Text>
-        { songs.map((song) => {
-            return (
-              <Pressable onPress={() => goToSong(song.id)}>
-                <Text key={song.id} style={styles.song}>{song.title}</Text>
-              </Pressable>
-            );
-        })}
+      )}
+      {!albumId && (
+        <Text style={styles.albumName}>{album}</Text>
+      )}
+      {artist && <Text style={styles.artistName}>by {artist}</Text>}
+      <Text style={styles.label}>Songs:</Text>
+      { songs.map((song) => {
+          return (
+            <Pressable onPress={() => goToSong(song.id)}>
+              <Text key={song.id} style={styles.song}>{song.title}</Text>
+            </Pressable>
+          );
+      })}
     </View>
   );
 }

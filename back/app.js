@@ -29,6 +29,8 @@ var getSongsByPlaylistIdRouter = require ('./routes/getsongsbyplaylistid');
 var getTagsByPlaylistIdRouter = require ('./routes/gettagsbyplaylistid');
 var addExistingTagToPlaylistRouter = require('./routes/addexistingtagtoplaylist');
 var addNewTagToPlaylistRouter = require('./routes/addnewtagtoplaylist');
+var editRecentsRouter = require('./routes/editrecents');
+var getRecentsRouter = require('./routes/getrecents');
 
 var app = express();
 
@@ -67,6 +69,8 @@ app.use('/getsongsbyplaylistid', getSongsByPlaylistIdRouter);
 app.use('/gettagsbyplaylistid', getTagsByPlaylistIdRouter);
 app.use('/addexistingtagtoplaylist', addExistingTagToPlaylistRouter);
 app.use('/addnewtagtoplaylist', addNewTagToPlaylistRouter);
+app.use('/editrecents', editRecentsRouter);
+app.use('/getrecents', getRecentsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

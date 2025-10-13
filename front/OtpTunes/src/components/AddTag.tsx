@@ -1,9 +1,11 @@
 import React from 'react';
 import { useState } from 'react';
-import { StyleSheet, Text, View, Dimensions, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
 import Input from './Input';
 import ActionButton from './ActionButton';
 import { Picker } from '@react-native-picker/picker';
+
+import { TagT } from '../util/types';
 
 export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string, songOrPlaylist : string, getNewTag : Function}) {
   const [tagText, setTagText] = useState('');
@@ -12,14 +14,16 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
   const [showTypeError, setShowTypeError] = useState(false);
   const [showTagError, setShowTagError] = useState(false);
   const [showTagMatch, setShowTagMatch] = useState(false);
+  const [showAreYouSure, setShowAreYouSure] = useState(false);
 
-  const [tagResults, setTagResults] = useState<Array<Object>>([]);
+  const [tagResults, setTagResults] = useState<Array<TagT>>([]);
   
   function onChangeText(type : string, text : string) {
     setTagText(text);
   }
 
   function addTagButton() {
+    setShowTagMatch(false);
     if (tagText == '') {
       setShowTagError(true);
       setShowTypeError(false);
@@ -48,15 +52,44 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
           setTagResults(data.rows);
           setShowTagMatch(true);
         } else {
-          if (songOrPlaylist == 'song') { addNewSongTag(); }
-          else if (songOrPlaylist == 'playlist') { addNewPlaylistTag(); }
-          else { console.log('song or playlist wasn\'t song or playlist'); }
+          setShowAreYouSure(true);
         }
       })
     } catch (err) { console.log(err); }
   }
 
-  function matchedTag(tag) {
+  function addNewTag() {
+      setShowAreYouSure(false);
+      if (songOrPlaylist == 'song') { addNewSongTag(); }
+      else if (songOrPlaylist == 'playlist') { addNewPlaylistTag(); }
+      else { console.log('song or playlist wasn\'t song or playlist'); }
+  }
+
+  function editRecents() {
+    console.log('edit recents');
+    try {
+      var body = {id: id}
+      var request = new Request('http://localhost:3000/editrecents', {
+        method: 'post',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      fetch(request)
+      .then((result) => { return result.json(); })
+      .then((data) => {
+        console.log(data);
+      });
+
+    } catch (err) { console.log(err);}
+  }
+
+  function notSure() {
+    setShowAreYouSure(false);
+  }
+
+  function matchedTag(tag: TagT) {
     console.log('matched ', tag);
     setShowTagMatch(false);
     if (songOrPlaylist == 'song') {
@@ -68,7 +101,7 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
     }
   }
 
-  function addExistingSongTag(tag) {
+  function addExistingSongTag(tag: TagT) {
     console.log('add to song ', tag);
     try {
       fetch(`http://localhost:3000/addexistingtagtosong?songId=${id}&tagId=${tag.tag_id}`)
@@ -76,6 +109,7 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
       .then((data) => {
         console.log('add result ', data.rows);
         getNewTag(tag);
+        editRecents();
       })
     } catch (err) { console.log(err); }
   }
@@ -88,11 +122,12 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
       .then((data) => {
         console.log('add result ', data.rows);
         getNewTag({tag_id: data.rows[0].add_tag_to_song, tag_text: tagText, tag_type: tagType});
+        editRecents();
       })
     } catch (err) { console.log(err); }
   }
 
-  function addExistingPlaylistTag(tag) {
+  function addExistingPlaylistTag(tag: TagT) {
     console.log('add to playlist ', tag);
     try {
       fetch(`http://localhost:3000/addexistingtagtoplaylist?playlistId=${id}&tagId=${tag.tag_id}`)
@@ -145,13 +180,14 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
             <ActionButton title='Add Tag' onPress={addTagButton}/>
         </View>
       </View>
-      <Text style={[styles.notice, { display: showTypeError? 'block' : 'none' }]}>Please pick a tag category!</Text>
-      <Text style={[styles.notice, { display: showTagError? 'block' : 'none' }]}>Please enter a tag!</Text>
+      <Text style={[styles.notice, { display: showTypeError? 'contents' : 'none' }]}>Please pick a tag category!</Text>
+      <Text style={[styles.notice, { display: showTagError? 'contents' : 'none' }]}>Please enter a tag!</Text>
       {showTagMatch &&
         <View>
           <Text style={styles.matchTitle}>Do any of these tags match?</Text>
+          <View style={styles.outerBox}>
           {tagResults.map((tag, key) => 
-          <View key={key} style={styles.tagBox}>
+          <View key={tag.tag_id} style={styles.tagBox}>
             <Text style={styles.tagTitle}>Tag: </Text> <Text style={styles.tag}>{tag.tag_text} </Text>
             <Text style={styles.tagTitle}>Type: </Text> <Text style={styles.tag}>{tag.tag_type}</Text>
             <Pressable onPress={() => matchedTag(tag)}>
@@ -159,6 +195,24 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
             </Pressable>
           </View>
           )}
+          </View>
+        </View>
+      }
+      {showAreYouSure && 
+        <View style={styles.sureBox}>
+          <View style={styles.sureBoxText}>
+            <Text style={styles.sureText}>Add tag </Text>
+            <Text style={styles.sureContent}>{tagText} </Text>
+            <Text style={styles.sureText}>of type </Text>
+            <Text style={styles.sureContent}>{tagType}?</Text>
+          </View>
+
+          <Pressable onPress={() => addNewTag()}>
+              <Text style={styles.thisOne}>Yes</Text>
+          </Pressable>
+          <Pressable onPress={() => notSure()}>
+              <Text style={styles.thisOne}>No</Text>
+          </Pressable>
         </View>
       }
     </View>
@@ -167,27 +221,52 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
 
 
 const styles = StyleSheet.create({
+  outerBox: {
+    flexDirection: 'row',
+    alignContent: 'flex-start',
+  },
   thisOne: {
     padding: 10,
     marginLeft: 12,
     fontSize: 16,
-    backgroundColor: 'rgb(68, 150, 238)',
-    borderRadius: 10,
+    backgroundColor: 'rgba(255, 255, 255, 1)',
+    borderWidth: 1,
+    fontFamily: "DMMono_400Regular",
+  },
+  sureBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    paddingLeft: 20,
+  },
+  sureBoxText: {
+    display: 'flex',
+    flexDirection: 'row',
+    paddingTop: 12,
+  },
+  sureContent: {
+    fontWeight: 'bold',
+    fontFamily: "DMMono_400Regular",
+  },
+  sureText: {
+    fontFamily: "DMMono_400Regular",
   },
   matchTitle: {
     fontSize: 24,
     color: 'gray',
     padding: 10,
+    fontFamily: "DMMono_400Regular",
   },
   tag: {
     fontSize: 16,
     paddingTop: 10,
     textTransform: 'capitalize',
+    fontFamily: "DMMono_400Regular",
   },
   tagTitle: {
     fontSize: 20,
     paddingTop: 6,
     color: 'gray',
+    fontFamily: "DMMono_400Regular",
   },
   container: {
     display: 'flex',
@@ -199,11 +278,11 @@ const styles = StyleSheet.create({
   tagBox: {
     flexDirection: 'row',
     backgroundColor: 'rgb(255,255,255)',
-    maxWidth: 'fit-content',
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 5,
     position: 'relative',
     marginLeft: 8,
+    marginBottom: 8,
   },
   box: {
     display: 'flex',

@@ -1,13 +1,24 @@
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Dimensions, ScrollView, Pressable } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { useFonts } from "expo-font";
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 
-import DisplayAlbumAndSongs from '@/src/components/DisplayAlbumAndSongs';
+type AlbumT = {
+    artist_text: string;
+    display_artist: string;
+    display_title: string;
+    release_year: number;
+};
+
+type SongT = {
+    artist_text: string;
+    song_id: string;
+    song_title: string;
+};
 
 export default function Album() {
   const [fontsLoaded, error] = useFonts({
@@ -25,9 +36,9 @@ export default function Album() {
     });
   }
 
-  const [songResults, setSongResults] = useState([]);
+  const [songResults, setSongResults] = useState<Array<SongT>>([]);
 
-  const [albumResults, setAlbumResults] = useState({});
+  const [albumResults, setAlbumResults] = useState<AlbumT>();
 
   useEffect(() => {
     console.log('get album by id ', id);
@@ -60,7 +71,7 @@ export default function Album() {
         {albumResults &&
           <View>
             <Text style={styles.title}>{albumResults['display_title']}</Text>
-            <Text  style={styles.subtitle}>Songs: </Text>
+            <Text style={styles.subtitle}>Songs: </Text>
           </View>
         }
 
@@ -69,7 +80,13 @@ export default function Album() {
             console.log(result);
               return (
                 <Pressable onPress={() => goToSong(result[1].song_id)}>
-                  <Text style={styles.songText}>{result[1].song_title} by {result[1].artist_text}</Text>
+                  {result[1].artist_text && (
+                    <Text style={styles.songText}>{result[1].song_title} by {result[1].artist_text}</Text>
+                  )}
+                  {!result[1].artist_text && (
+                    <Text style={styles.songText}>{result[1].song_title}</Text>
+                  )}
+                  
                 </Pressable>
               );
           })

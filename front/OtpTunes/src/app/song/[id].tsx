@@ -10,6 +10,20 @@ import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 import TagsCard from '../../components/TagsCard'
 import AddTag from '../../components/AddTag';
 
+import { TagT } from '../../util/types';
+
+type SongInfo = {
+  album_artist: string;
+  album_artist_id: string;
+  album_title: string;
+  release_year: number;
+  show_artist_or_album: string;
+  song_album_id: string;
+  song_artist: string;
+  song_artist_id: string;
+  song_title: string;
+};
+
 export default function Song() {
   const [fontsLoaded, error] = useFonts({
     DMMono_400Regular,
@@ -17,17 +31,15 @@ export default function Song() {
 
   const router = useRouter();
 
-  const { id } = useLocalSearchParams();
+  const { id } = useLocalSearchParams<{id: string}>();
 
-  // album_artist, album_artist_id, album_title, release_year, show_artist_or_album,
-  // song_album_id, song_artist, song_artist_id, song_id, song_title
-  const [songResults, setSongResults] = useState({});
-  const [tagResults, setTagResults] = useState(Array<Object>);
+  const [songResults, setSongResults] = useState<SongInfo>();
+  const [tagResults, setTagResults] = useState(Array<TagT>);
 
-  const [moodTags, setMoodTags] = useState(Array<Object>);
-  const [themeTags, setThemeTags] = useState(Array<Object>);
-  const [metaTags, setMetaTags] = useState(Array<Object>);
-  const [fandomTags, setFandomTags] = useState(Array<Object>);
+  const [moodTags, setMoodTags] = useState(Array<TagT>);
+  const [themeTags, setThemeTags] = useState(Array<TagT>);
+  const [metaTags, setMetaTags] = useState(Array<TagT>);
+  const [fandomTags, setFandomTags] = useState(Array<TagT>);
 
   useEffect(() => {
     console.log('get info by id ', id);
@@ -50,7 +62,7 @@ export default function Song() {
 
   }, [id]);
 
-  function updateTags(tag) {
+  function updateTags(tag : TagT) {
     console.log(tag.tag_id, ' ', tag.tag_text, ' ', tag.tag_type);
       switch(tag['tag_type']) {
         case 'mood':

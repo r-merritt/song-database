@@ -30,7 +30,7 @@ router.get('/', async function(req, res, next) {
                    'FROM (SELECT * FROM albums WHERE album_id = $1) albums \n' +
                    'JOIN LATERAL (SELECT * FROM songs WHERE songs.display_album = albums.album_id) songs \n' +
                    'ON songs.display_album = albums.album_id \n' +
-                   'JOIN artists on artists.artist_id = songs.display_artist;';
+                   'LEFT JOIN artists on artists.artist_id = songs.display_artist;';
 
         const query = {
             text: text,

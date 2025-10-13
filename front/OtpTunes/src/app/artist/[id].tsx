@@ -1,12 +1,39 @@
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Dimensions, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 
 import { useFonts } from "expo-font";
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 
+import { Dictionary } from '../../util/types';
+
 import DisplayAlbumAndSongs from '@/src/components/DisplayAlbumAndSongs';
+
+type SongAndAlbum = {
+    album_title: string;
+    display_album: string;
+    release_year: number;
+    song_id: string;
+    song_title: string;
+};
+
+type Song = {
+  title: string;
+  id: string;
+}
+
+type Result = {
+  id: string;
+  year: number | undefined;
+  title: string;
+  songs: Array<Song>;
+};
+
+type ArtistResult = {
+  artist_id: string;
+  artist_text: string;
+};
 
 export default function Artist() {
   const [fontsLoaded, error] = useFonts({
@@ -15,11 +42,11 @@ export default function Artist() {
 
   const { id } = useLocalSearchParams();
 
-  const [songResults, setSongResults] = useState([]);
+  const [songResults, setSongResults] = useState<Array<SongAndAlbum>>([]);
 
-  const [artistResults, setArtistResults] = useState({});
+  const [artistResults, setArtistResults] = useState<ArtistResult>();
 
-  const [songsByAlbum, setSongsByAlbum] = useState({});
+  const [songsByAlbum, setSongsByAlbum] = useState<Dictionary<Result>>({});
 
   useEffect(() => {
     console.log('get info by id ', id);
@@ -48,21 +75,27 @@ export default function Artist() {
   }, [id]);
 
   useEffect(() => {
-    const resultsObject = {};
-    resultsObject['noAlbum'] = [];
+    const resultsObject : Dictionary<Result> = {};
+    resultsObject['noAlbum'] = {
+      id: '',
+      year: undefined,
+      title: '(No Album Found)',
+      songs: []
+    };
     for (var row of songResults) {
       var existing;
       if (!row.display_album) {
-        existing = resultsObject['noAlbum'];
+        existing = resultsObject['noAlbum'].songs;
         existing.push({title: row.song_title, id: row.song_id});
-        resultsObject['noAlbum'] = existing;
+        resultsObject['noAlbum'].songs = existing;
       } else {
         if (!resultsObject[row.display_album]) {
-          resultsObject[row.display_album] = {};
-          resultsObject[row.display_album].songs = [];
-          resultsObject[row.display_album].title = row.album_title;
-          resultsObject[row.display_album].year = row.release_year;
-          resultsObject[row.display_album].id = row.display_album;
+          resultsObject[row.display_album] = {
+            songs: [],
+            title: row.album_title,
+            year: row.release_year,
+            id: row.display_album
+          };
         }
       
       existing = resultsObject[row.display_album].songs;
@@ -74,42 +107,48 @@ export default function Artist() {
    }
 
     setSongsByAlbum(resultsObject);
+    console.log(resultsObject);
   }, [songResults])
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
         {artistResults &&
           <View>
-            <Text style={styles.title}>{artistResults['artist_text']}</Text>
-            <Text style={styles.subtitle}>Songs: </Text>
+            <View>
+              <Text style={styles.title}>{artistResults['artist_text']}</Text>
+              <Text style={styles.subtitle}>Songs: </Text>
+            </View>
+          
+
+            <View style={styles.albumsContainer}>
+              { Object.entries(songsByAlbum).map((result) => {
+                if (result[0] != 'noAlbum') {
+                  return (
+                    <DisplayAlbumAndSongs
+                      key={result[0]}
+                      album={result[1].title}
+                      albumId={result[1].id}
+                      artist={artistResults['artist_text']}
+                      songs={result[1].songs}/>
+                  );
+                } else {
+                  if (result[1].songs[0]) {
+                    return (
+                      <DisplayAlbumAndSongs
+                        key={'noAlbumFound'}
+                        album={'(No Album Found)'}
+                        albumId={''}
+                        artist={''}
+                        songs={result[1].songs}
+                      />
+                    )
+                  }
+                }
+              })
+              }
+            </View>
           </View>
         }
-
-        <View style={styles.albumsContainer}>
-          { Object.entries(songsByAlbum).map((result) => {
-            if (result[0] != 'noAlbum') {
-              return (
-                <DisplayAlbumAndSongs
-                  key={result[0]}
-                  album={result[1].title}
-                  albumId={result[1].id}
-                  artist={artistResults['artist_text']}
-                  songs={result[1].songs}/>
-              );
-            } else {
-              if (result[1][0]) {
-                return (
-                  <DisplayAlbumAndSongs
-                    key={'noAlbumFound'}
-                    album={'(No Album Found)'}
-                    songs={result[1]}
-                  />
-                )
-              }
-            }
-          })
-          }
-        </View>
 
     </ScrollView>
   );

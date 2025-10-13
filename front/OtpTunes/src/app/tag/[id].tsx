@@ -8,6 +8,8 @@ import { useRouter } from 'expo-router';
 import { useFonts } from "expo-font";
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 
+import { TagT } from '../../util/types';
+
 export default function Tag() {
   const [fontsLoaded, error] = useFonts({
     DMMono_400Regular,
@@ -16,7 +18,7 @@ export default function Tag() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
 
-  const [tagResult, setTagResult] = useState({});
+  const [tagResult, setTagResult] = useState<TagT>();
   const [songResults, setSongResults] = useState([]);
 
   const [page, setPage] = useState<number>(0);
@@ -118,7 +120,6 @@ export default function Tag() {
             ))}
 
             <DataTable.Pagination
-              style={styles.pagination}
               page={page}
               numberOfPages={Math.ceil(songResults.length / itemsPerPage)}
               onPageChange={(page) => setPage(page)}
@@ -154,7 +155,4 @@ const styles = StyleSheet.create({
   tableText: {
     fontFamily: "DMMono_400Regular",
   },
-  pagination: {
-    fontFamily: "DMMono_400Regular",
-  }
 });

@@ -6,19 +6,18 @@ import {
 export default function ActionButton({onPress, title}: {onPress : Function, title : string}) {
 
   return (
-<Pressable
-    onPress={onPress}
-    style={({pressed}) => [
-      {
-        backgroundColor: pressed ? 'rgba(194, 194, 194, 1)' : 'rgba(255, 255, 255, 1)',
-      }, styles.buttonContainer,
-    ]}
-    underlayColor='rgb(68, 150, 238)'
-  >
-    <View style={styles.button}>
-      <Text style={styles.buttonText}>{title}</Text>
-    </View>
-  </Pressable>
+    <Pressable
+      onPress={() => onPress()}
+      style={({pressed}) => [
+        {
+          backgroundColor: pressed ? 'rgba(194, 194, 194, 1)' : 'rgba(255, 255, 255, 1)',
+        }, styles.buttonContainer,
+      ]}
+    >
+      <View style={styles.button}>
+        <Text style={styles.buttonText}>{title}</Text>
+      </View>
+    </Pressable>
   );
 }
 

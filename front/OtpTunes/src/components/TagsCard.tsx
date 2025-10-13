@@ -4,10 +4,12 @@ import { useRouter } from 'expo-router';
 
 const { width } = Dimensions.get('window')
 
-export default function TagsCard({title, tags} : {title : string, tags : Array<Object>}) {
+import { TagT } from '../util/types';
+
+export default function TagsCard({title, tags} : {title : string, tags : Array<TagT>}) {
   const router = useRouter();
 
-  function goToTag(tagId) {
+  function goToTag(tagId : string) {
     router.navigate({
       pathname: '/tag/[id]',
       params: { id: tagId }

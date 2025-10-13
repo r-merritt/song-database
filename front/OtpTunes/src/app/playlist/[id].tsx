@@ -1,7 +1,7 @@
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Dimensions, ScrollView, Pressable } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import TagsCard from '../../components/TagsCard'
@@ -10,12 +10,24 @@ import AddTag from '../../components/AddTag';
 import { useFonts } from "expo-font";
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 
+import { TagT, PlaylistT } from '../../util/types';
+
+type PlaylistSongT = {
+  album_title: string;
+  artist_text: string;
+  commentary: string;
+  show_artist_or_album: string;
+  song_id: string;
+  song_order: number;
+  song_title: string;
+};
+
 export default function Playlist() {
   const [fontsLoaded, error] = useFonts({
     DMMono_400Regular,
   });
 
-  const { id } = useLocalSearchParams();
+  const { id } = useLocalSearchParams<{id: string}>();
 
   const router = useRouter();
 
@@ -26,20 +38,20 @@ export default function Playlist() {
     });
   }
 
-  const [songResults, setSongResults] = useState([]);
-  const [playlistResults, setPlaylistResults] = useState({});
+  const [songResults, setSongResults] = useState<Array<PlaylistSongT>>([]);
+  const [playlistResults, setPlaylistResults] = useState<PlaylistT>();
   const [tagResults, setTagResults] = useState([]);
 
-  const [moodTags, setMoodTags] = useState(Array<Object>);
-  const [themeTags, setThemeTags] = useState(Array<Object>);
-  const [metaTags, setMetaTags] = useState(Array<Object>);
-  const [fandomTags, setFandomTags] = useState(Array<Object>);
+  const [moodTags, setMoodTags] = useState(Array<TagT>);
+  const [themeTags, setThemeTags] = useState(Array<TagT>);
+  const [metaTags, setMetaTags] = useState(Array<TagT>);
+  const [fandomTags, setFandomTags] = useState(Array<TagT>);
 
   useEffect(() => {
-    const mood = [];
-    const theme = [];
-    const meta = [];
-    const fandom = [];
+    const mood : Array<TagT> = [];
+    const theme : Array<TagT> = [];
+    const meta : Array<TagT> = [];
+    const fandom : Array<TagT> = [];
 
     for (var tag of tagResults) {
       switch(tag['tag_type']) {
@@ -64,7 +76,7 @@ export default function Playlist() {
     setFandomTags(fandom);
   }, [tagResults]);
 
-  function updateTags(tag) {
+  function updateTags(tag : TagT) {
     console.log(tag.tag_id, ' ', tag.tag_text, ' ', tag.tag_type);
       switch(tag['tag_type']) {
         case 'mood':
@@ -188,5 +200,9 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     flexDirection: 'column',
     maxWidth: '100%',
+  },
+  tagContainer: {
+    flexDirection: 'column',
+    margin: 12,
   },
 });

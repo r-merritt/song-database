@@ -8,7 +8,33 @@ import SongCard from './SongCard';
 import VerifyArtistAndSongs from './VerifyArtistAndSongs';
 import VerifyAlbumAndSongs from './VerifyAlbumAndSongs';
 
+import { Dictionary } from '../util/types';
+
 const { width } = Dimensions.get('window')
+
+type ArtistResult = {
+  id: string;
+  songs: Array<string>;
+  artist: string;
+};
+
+type AlbumResult = {
+  id: string;
+  songs: Array<string>;
+  artist: string;
+  title: string;
+  year: number;
+};
+
+type SongResult = {
+  album_title: string;
+  artist_text: string;
+  display_album: string;
+  display_artist: string;
+  release_year: number;
+  song_id: string;
+  song_title: string;
+};
 
 export default function AddSongFlow() {
   const router = useRouter();
@@ -18,9 +44,9 @@ export default function AddSongFlow() {
   const [newAlbum, setNewAlbum] = useState<string>('');
   const [newAlbumYear, setNewAlbumYear] = useState<string>('');
 
-  const [searchResults, setSearchResults] = useState<Array<Object>>([]);
-  const [artistResults, setArtistResults] = useState<Array<Array<Object>>>([]);
-  const [albumResults, setAlbumResults] = useState<Array<Array<Object>>>([]);
+  const [searchResults, setSearchResults] = useState<Array<SongResult>>([]);
+  const [artistResults, setArtistResults] = useState<Array<ArtistResult>>([]);
+  const [albumResults, setAlbumResults] = useState<Array<AlbumResult>>([]);
 
   const [showVerifySong, setShowVerifySong] = useState<boolean>(true);
   const [showSongList, setShowSongList] = useState<boolean>(false);
@@ -160,6 +186,7 @@ export default function AddSongFlow() {
           }
 
           setSearchResults(results);
+          console.log('results ', results);
           if (results.length > 0) {
             setShowSongList(true);
           } else {
@@ -180,13 +207,15 @@ export default function AddSongFlow() {
       .then((result) => {return result.json();})
       .then((data) => {
         console.log('artist results ', data.rows);
-        const resultsObject = {};
+        const resultsObject : Dictionary<ArtistResult> = {};
         for (var row of data.rows) {
           var existing;
           if (!resultsObject[row.artist_id]) {
-            resultsObject[row.artist_id] = {};
-            resultsObject[row.artist_id].songs = [];
-            resultsObject[row.artist_id].artist = row.artist_text;
+            resultsObject[row.artist_id] = {
+              id: row.artist_id,
+              songs: [],
+              artist: row.artist_text,
+            };
           }
           
           existing = resultsObject[row.artist_id].songs;
@@ -196,10 +225,10 @@ export default function AddSongFlow() {
           resultsObject[row.artist_id].songs = existing;
         }
 
-        const resultsArray = [];
+        const resultsArray : Array<ArtistResult> = [];
 
         for (var obj of Object.entries(resultsObject)) {
-          resultsArray.push(obj);
+          resultsArray.push(obj[1]);
         }
         setArtistResults(resultsArray);
         if (resultsArray.length > 0) {
@@ -221,15 +250,17 @@ function getAlbum() {
       .then((result) => {return result.json();})
       .then((data) => {
         console.log('album results ', data.rows);
-        const resultsObject = {};
+        const resultsObject : Dictionary<AlbumResult> = {};
         for (var row of data.rows) {
           var existing;
           if (!resultsObject[row.album_id]) {
-            resultsObject[row.album_id] = {};
-            resultsObject[row.album_id].songs = [];
-            resultsObject[row.album_id].artist = row.artist_text;
-            resultsObject[row.album_id].title = row.album_title;
-            resultsObject[row.album_id].year = row.release_year;
+            resultsObject[row.album_id] = {
+              id: row.album_id,
+              songs: [],
+              artist: row.artist_text,
+              title: row.album_title,
+              year: row.release_year,
+            };
           }
           
           existing = resultsObject[row.album_id].songs;
@@ -242,7 +273,7 @@ function getAlbum() {
         const resultsArray = []
         
         for (var obj of Object.entries(resultsObject)) {
-          resultsArray.push(obj);
+          resultsArray.push(obj[1]);
         }
 
         setAlbumResults(resultsArray);
@@ -267,17 +298,17 @@ function getAlbum() {
     });
   }
 
-  function artistVerify(artist) {
-    setMatchedArtistId(artist[0]);
-    setMatchedArtistText(artist[1].artist);
+  function artistVerify(artist : ArtistResult) {
+    setMatchedArtistId(artist.id);
+    setMatchedArtistText(artist.artist);
     setShowArtistList(false);
     getAlbum();
   }
 
-  function albumVerify(album) {
-    setMatchedAlbumId(album[0]);
-    setMatchedAlbumText(album[1].title);
-    setMatchedAlbumYear(album[1].year);
+  function albumVerify(album : AlbumResult) {
+    setMatchedAlbumId(album.id);
+    setMatchedAlbumText(album.title);
+    setMatchedAlbumYear(`${album.year}`);
     setShowAlbumList(false);
     setShowAreYouSure(true);
     setShowVerifySong(false);
@@ -380,12 +411,12 @@ function getAlbum() {
               <View style={styles.artistListContainer}>
               <Text style={styles.matchText}>Are any of these artists the {newArtist} you intended?</Text>
               <View style={styles.artistsContainer}>
-                { artistResults.map((result, key) => {
+                { artistResults.map((result) => {
                   return (
                     <VerifyArtistAndSongs
-                      key={key}
-                      artist={result[1].artist}
-                      songs={result[1].songs}
+                      key={result.id}
+                      artist={result.artist}
+                      songs={result.songs}
                       onVerify={() => artistVerify(result)} />
                   );
                 })
@@ -402,14 +433,14 @@ function getAlbum() {
               <View style={styles.artistListContainer}>
               <Text style={styles.matchText}>Are any of these albums the {newAlbum} you intended?</Text>
               <View style={styles.artistsContainer}>
-                { albumResults.map((result, key) => {
+                { albumResults.map((result) => {
                   return (
                     <VerifyAlbumAndSongs
-                      key={key}
-                      album={result[1].title}
-                      artist={result[1].artist}
-                      songs={result[1].songs}
-                      year={result[1].year}
+                      key={result.id}
+                      album={result.title}
+                      artist={result.artist}
+                      songs={result.songs}
+                      year={result.year}
                       onVerify={() => albumVerify(result)} />
                   );
                 })

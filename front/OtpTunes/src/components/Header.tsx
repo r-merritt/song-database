@@ -31,6 +31,20 @@ export default function Header() {
             })
           } />
         </View>
+        <View style={styles.button}>
+          <ActionButton title='Recent Songs' onPress={() =>
+            router.navigate({
+              pathname: '/recents',
+            })
+          } />
+        </View>
+        <View style={styles.feedbackButton}>
+          <ActionButton title='Feedback?' onPress={() =>
+              router.navigate({
+                pathname: '/feedback',
+              })
+            } />
+        </View>
       </View>
     </View>
   );
@@ -50,5 +64,8 @@ const styles = StyleSheet.create({
     padding: 5,
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  feedbackButton: {
+    marginLeft: 'auto',
   },
 });

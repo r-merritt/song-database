@@ -9,7 +9,19 @@ import Input from '../components/Input';
 import { useFonts } from "expo-font";
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 
+import { PlaylistT } from '../util/types';
+
 const { width } = Dimensions.get('window')
+
+type SongResult = {
+  album_title: string;
+  artist_text: string;
+  display_album: string;
+  display_artist: string;
+  release_year: number;
+  song_id: string;
+  song_title: string;
+};
 
 // add option to search either songs or playlists
 
@@ -26,10 +38,10 @@ export default function Search({ } : { }) {
     const [album, setAlbum] = useState('');
     const [tags, setTags] = useState('');
 
-    const [songSearchResults, setSongSearchResults] = useState<Array<Object>>([]);
+    const [songSearchResults, setSongSearchResults] = useState<Array<SongResult>>([]);
     const [showSongResults, setShowSongResults] = useState<boolean>(false);
 
-    const [playlistSearchResults, setPlaylistSearchResults] = useState<Array<Object>>([]);
+    const [playlistSearchResults, setPlaylistSearchResults] = useState<Array<PlaylistT>>([]);
     const [showPlaylistResults, setShowPlaylistResults] = useState<boolean>(false);
 
     const [page, setPage] = useState<number>(0);
