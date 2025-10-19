@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 var getallsongsRouter = require('./routes/getallsongs');
 var addSongRounter = require('./routes/addsong');
 var findSongWithTitleRouter = require('./routes/findsongwithtitle');
@@ -45,7 +44,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/getallsongs', getallsongsRouter);
 app.use('/addsong', addSongRounter);
 app.use('/findsongwithtitle', findSongWithTitleRouter);

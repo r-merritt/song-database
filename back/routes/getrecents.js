@@ -2,18 +2,13 @@ var pg = require('pg');
 var Client = pg.Client;
 var express = require('express');
 var router = express.Router();
+var config = require('../config');
 
 /* GET recents listing. */
 router.get('/', async function(req, res, next) {
         console.log("Get recents");
 
-        const client = new Client({
-        user: 'postgres',
-        password: 'admin',
-        host: 'localhost',
-        port: 5432,
-        database: 'otptunes',
-        })
+        const client = new Client(config.DBClientCreds);
 
         await client.connect();
 

@@ -2,6 +2,7 @@ var pg = require('pg');
 var Client = pg.Client;
 var express = require('express');
 var router = express.Router();
+var config = require('../config');
 
 /* GET search playlists by tags listing. */
 router.get('/', async function(req, res, next) {
@@ -16,13 +17,7 @@ router.get('/', async function(req, res, next) {
         const tagArray = tagsSplit.map((tag) => tag.trim());
         console.log(tagArray);
 
-        const client = new Client({
-        user: 'postgres',
-        password: 'admin',
-        host: 'localhost',
-        port: 5432,
-        database: 'otptunes',
-        })
+        const client = new Client(config.DBClientCreds);
 
         function prepareQuery(queryText) {
             return '%' + queryText.split(' ').join('%') + '%';
