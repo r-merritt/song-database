@@ -30,10 +30,6 @@ router.get('/', async function(req, res, next) {
 
         const values = [];
 
-        // select * from playlists where playlist_id in
-        // (select playlist_id from playlist_tags join (select * from tags where tag_text = 'Silly') tags
-        // on playlist_tags.tag_id = tags.tag_id);
-
         var text = 'SELECT * FROM playlists WHERE playlist_id IN \n' +
                     '(SELECT playlist_id FROM playlist_tags JOIN \n' +
                     '(SELECT * FROM tags WHERE \n';
@@ -66,14 +62,14 @@ router.get('/', async function(req, res, next) {
             answer = await client.query(query);
         } catch (err) {
             console.log(err);
+            answer = {code: err.code};
+            res.status(418);
         }
 
         await client.end();
 
         res.contentType = 'application/json';
         res.send(answer);
-
-        // res.send('ok!');
     });
 
 module.exports = router;

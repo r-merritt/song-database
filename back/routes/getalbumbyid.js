@@ -25,10 +25,6 @@ router.get('/', async function(req, res, next) {
             req.query.id,
         ];
 
-// select display_title, display_artist, release_year, artist_text
-// from (select * from albums where album_id = '14d0d6a6-47ef-45b6-b60f-720e2339c69c') albums
-// left join artists on display_artist = artist_id;
-
         var text = 'SELECT display_title, display_artist, release_year, artist_text \n' +
                     'FROM (SELECT * FROM albums WHERE album_id = $1) albums \n' +
                     'LEFT JOIN artists ON display_artist = artist_id;';
@@ -47,14 +43,14 @@ router.get('/', async function(req, res, next) {
             answer = await client.query(query);
         } catch (err) {
             console.log(err);
+            answer = {code: err.code};
+            res.status(418);
         }
 
         await client.end();
 
         res.contentType = 'application/json';
         res.send(answer);
-
-        // res.send('ok!');
     });
 
 module.exports = router;

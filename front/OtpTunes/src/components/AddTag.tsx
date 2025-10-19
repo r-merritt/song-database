@@ -38,8 +38,6 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
     }
   }
 
-
-
   function getTag() {
     setShowTagMatch(false);
     console.log('checking for tag ', tagText);
@@ -47,12 +45,16 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
       fetch(`http://localhost:3000/gettagbytext?tag=${tagText}`)
       .then((result) => {return result.json();})
       .then((data) => {
-        console.log('tag result ', data.rows);
-        if (data.rows[0]) {
-          setTagResults(data.rows);
-          setShowTagMatch(true);
+        if (data.code) {
+          console.log('Error ', data);
         } else {
-          setShowAreYouSure(true);
+          console.log('tag result ', data.rows);
+          if (data.rows[0]) {
+            setTagResults(data.rows);
+            setShowTagMatch(true);
+          } else {
+            setShowAreYouSure(true);
+          }
         }
       })
     } catch (err) { console.log(err); }
@@ -79,7 +81,11 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
       fetch(request)
       .then((result) => { return result.json(); })
       .then((data) => {
-        console.log(data);
+        if (data.code) {
+          console.log('Error ', data);
+        } else {
+          console.log(data);
+        }
       });
 
     } catch (err) { console.log(err);}
@@ -105,11 +111,17 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
     console.log('add to song ', tag);
     try {
       fetch(`http://localhost:3000/addexistingtagtosong?songId=${id}&tagId=${tag.tag_id}`)
-      .then((result) => {return result.json();})
+      .then((result) => {
+        return result.json();
+      })
       .then((data) => {
-        console.log('add result ', data.rows);
-        getNewTag(tag);
-        editRecents();
+        if (data.code) {
+          console.log('Error ', data);
+        } else {
+          console.log('add result ', data);
+          getNewTag(tag);
+          editRecents();
+        }
       })
     } catch (err) { console.log(err); }
   }
@@ -120,9 +132,13 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
       fetch(`http://localhost:3000/addnewtagtosong?id=${id}&tag=${tagText}&type=${tagType}`)
       .then((result) => {return result.json();})
       .then((data) => {
-        console.log('add result ', data.rows);
-        getNewTag({tag_id: data.rows[0].add_tag_to_song, tag_text: tagText, tag_type: tagType});
-        editRecents();
+        if (data.code) {
+          console.log('Error ', data);
+        } else {
+          console.log('add result ', data.rows);
+          getNewTag({tag_id: data.rows[0].add_tag_to_song, tag_text: tagText, tag_type: tagType});
+          editRecents();
+        }
       })
     } catch (err) { console.log(err); }
   }
@@ -133,8 +149,12 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
       fetch(`http://localhost:3000/addexistingtagtoplaylist?playlistId=${id}&tagId=${tag.tag_id}`)
       .then((result) => {return result.json();})
       .then((data) => {
-        console.log('add result ', data.rows);
-        getNewTag(tag);
+        if (data.code) {
+          console.log('Error ', data);
+        } else {
+          console.log('add result ', data.rows);
+          getNewTag(tag);
+        }
       })
     } catch (err) { console.log(err); }
   }
@@ -145,8 +165,12 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
       fetch(`http://localhost:3000/addnewtagtoplaylist?id=${id}&tag=${tagText}&type=${tagType}`)
       .then((result) => {return result.json();})
       .then((data) => {
-        console.log('add result ', data.rows);
-        getNewTag({tag_id: data.rows[0].add_tag_to_playlist, tag_text: tagText, tag_type: tagType});
+        if (data.code) {
+          console.log('Error ', data);
+        } else {
+          console.log('add result ', data.rows);
+          getNewTag({tag_id: data.rows[0].add_tag_to_playlist, tag_text: tagText, tag_type: tagType});
+        }
       })
     } catch (err) { console.log(err); }
   }

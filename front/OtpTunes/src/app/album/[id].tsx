@@ -46,8 +46,12 @@ export default function Album() {
       fetch(`http://localhost:3000/getalbumbyid?id=${id}`)
       .then((result) => {return result.json();})
       .then((data) => {
-        console.log('album result ', data.rows);
-        setAlbumResults(data.rows[0]);
+        if (data.code) {
+          console.log('Error ', data);
+        } else {
+          console.log('album result ', data.rows);
+          setAlbumResults(data.rows[0]);
+        }
       })
     } catch (err) { console.log(err); }
 
@@ -59,8 +63,12 @@ export default function Album() {
       fetch(`http://localhost:3000/getsongsbyalbumid?id=${id}`)
       .then((result) => {return result.json();})
       .then((data) => {
-        console.log('songs result ', data.rows);
-        setSongResults(data.rows);
+        if (data.code) {
+          console.log('Error ', data);
+        } else {
+          console.log('songs result ', data.rows);
+          setSongResults(data.rows);
+        }
       })
     } catch (err) { console.log(err); }
 

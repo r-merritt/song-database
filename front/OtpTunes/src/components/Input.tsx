@@ -1,10 +1,9 @@
 import React from 'react';
 import { Ref } from 'react';
-import { StyleSheet, Text, View, Dimensions, TextInput } from 'react-native';
+import { StyleSheet, TextInput } from 'react-native';
 
-const { width } = Dimensions.get('window')
-
-export default function Input({placeholder, type, secureTextEntry = false, onChangeText, ref} : {placeholder : string, type : string, secureTextEntry? : boolean, onChangeText : Function, ref? : Ref<TextInput>}) {
+export default function Input({placeholder, type, secureTextEntry = false, onChangeText, ref} : 
+  {placeholder : string, type : string, secureTextEntry? : boolean, onChangeText : Function, ref? : Ref<TextInput>}) {
   return (
     <TextInput
       ref={ref}

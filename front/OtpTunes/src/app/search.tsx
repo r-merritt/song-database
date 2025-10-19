@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Dimensions, Pressable, ScrollView } from 'react-native';
-import { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native';
+import { useState } from 'react';
 import { DataTable } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
@@ -10,8 +10,6 @@ import { useFonts } from "expo-font";
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 
 import { PlaylistT } from '../util/types';
-
-const { width } = Dimensions.get('window')
 
 type SongResult = {
   album_title: string;
@@ -30,7 +28,6 @@ export default function Search({ } : { }) {
       DMMono_400Regular,
     });
 
-    const isFocused = useIsFocused();
     const router = useRouter();
 
     const [title, setTitle] = useState('');
@@ -112,9 +109,13 @@ export default function Search({ } : { }) {
         fetch(`http://localhost:3000/searchsongs?title=${title}&artist=${artist}&album=${album}&tags=${tags}`)
         .then((result) => {return result.json();})
         .then((data) => {
-          console.log('song result ', data.rows);
-          setSongSearchResults(data.rows);
-          setShowSongResults(true);
+          if (data.code) {
+            console.log('Error ', data);
+          } else {
+            console.log('song result ', data.rows);
+            setSongSearchResults(data.rows);
+            setShowSongResults(true);
+          }
         })
       } catch (err) { console.log(err); }
     } else {
@@ -124,9 +125,13 @@ export default function Search({ } : { }) {
         fetch(`http://localhost:3000/searchplaylistsbytags?tags=${tags}`)
         .then((result) => {return result.json();})
         .then((data) => {
-          console.log('playlist result ', data.rows);
-          setPlaylistSearchResults(data.rows);
-          setShowPlaylistResults(true);
+          if (data.code) {
+            console.log('Error ', data);
+          } else {
+            console.log('playlist result ', data.rows);
+            setPlaylistSearchResults(data.rows);
+            setShowPlaylistResults(true);
+          }
         })
       } catch (err) { console.log(err); }
     }

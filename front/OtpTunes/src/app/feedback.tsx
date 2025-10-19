@@ -1,9 +1,7 @@
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { useFonts } from "expo-font";
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
-
-const { width } = Dimensions.get('window')
 
 export default function Feedback() {
 

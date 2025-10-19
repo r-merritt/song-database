@@ -43,14 +43,20 @@ router.get('/', async function(req, res, next) {
             answer = await client.query(query);
         } catch (err) {
             console.log(err);
+            answer = {code: err.code};
+            if (err.code == '23505') {
+                res.status(400);
+                answer.msg = 'Can\'t add duplicate tag';
+            } else {
+                res.status(418);
+            }
+            
         }
 
         await client.end();
 
         res.contentType = 'application/json';
         res.send(answer);
-
-        // res.send('ok!');
     });
 
 module.exports = router;

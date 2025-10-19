@@ -2,7 +2,12 @@ import React from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 
-export default function DisplayAlbumAndSongs({album, albumId, artist, songs} : {album: string, albumId: string, artist: string, songs: Array<Object>}) {
+type SongT = {
+  id: string;
+  title: string;
+}
+
+export default function DisplayAlbumAndSongs({album, albumId, artist, songs} : {album: string, albumId: string, artist: string, songs: Array<SongT>}) {
   const router = useRouter();
 
   function goToSong(songId : string) {

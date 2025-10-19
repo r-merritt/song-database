@@ -36,8 +36,12 @@ export default function Recents() {
       fetch(`http://localhost:3000/getrecents`)
       .then((result) => {return result.json();})
       .then((data) => {
-        console.log('song result ', data.rows);
-        setResults(data.rows);
+        if (data.code) {
+          console.log('Error ', data);
+        } else {
+          console.log('song result ', data.rows);
+          setResults(data.rows);
+        }
       })
     } catch (err) { console.log(err); }
   }

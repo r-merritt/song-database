@@ -1,7 +1,5 @@
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import ActionButton from './ActionButton';
-
-const { width } = Dimensions.get('window')
 
 export default function SongCard({title, artist, album, onVerify} : {title: string, artist: string, album: string, onVerify: Function}) {
   return (

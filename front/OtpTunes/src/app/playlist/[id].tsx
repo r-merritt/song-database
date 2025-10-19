@@ -100,8 +100,12 @@ export default function Playlist() {
       fetch(`http://localhost:3000/getplaylistbyid?id=${id}`)
       .then((result) => {return result.json();})
       .then((data) => {
-        console.log('playlist result ', data.rows);
-        setPlaylistResults(data.rows[0]);
+        if (data.code) {
+          console.log('Error ', data);
+        } else {
+          console.log('playlist result ', data.rows);
+          setPlaylistResults(data.rows[0]);
+        }
       })
     } catch (err) { console.log(err); }
 
@@ -113,8 +117,12 @@ export default function Playlist() {
       fetch(`http://localhost:3000/getsongsbyplaylistid?id=${id}`)
       .then((result) => {return result.json();})
       .then((data) => {
-        console.log('songs result ', data.rows);
-        setSongResults(data.rows);
+        if (data.code) {
+          console.log('Error ', data);
+        } else {
+          console.log('songs result ', data.rows);
+          setSongResults(data.rows);
+        }
       })
     } catch (err) { console.log(err); }
 
@@ -126,8 +134,12 @@ export default function Playlist() {
       fetch(`http://localhost:3000/gettagsbyplaylistid?id=${id}`)
       .then((result) => {return result.json();})
       .then((data) => {
-        console.log('tags result ', data.rows);
-        setTagResults(data.rows);
+        if (data.code) {
+          console.log('Error ', data);
+        } else {
+          console.log('tags result ', data.rows);
+          setTagResults(data.rows);
+        }
       })
     } catch (err) { console.log(err); }
 

@@ -25,13 +25,6 @@ router.get('/', async function(req, res, next) {
             req.query.id,
         ];
 
-//         select song_tags.song_id as song_id, songs.display_title as song_title, songs.display_artist, display_album,
-// artist_text, albums.display_title as album_title
-// from (select * from song_tags where tag_id = 'f94af0b6-1cdc-4897-b993-3f93fa013e49') song_tags
-// join songs on songs.song_id = song_tags.song_id
-// left join artists on display_artist = artists.artist_id
-// left join albums on display_album = album_id;
-
         var text = 'SELECT song_tags.song_id AS song_id, songs.display_title AS song_title, songs.display_artist, display_album, \n' +
                     'artist_text, albums.display_title AS album_title, release_year \n' +
                     'FROM (SELECT * FROM song_tags WHERE tag_id = $1) song_tags \n' +
@@ -53,6 +46,8 @@ router.get('/', async function(req, res, next) {
             answer = await client.query(query);
         } catch (err) {
             console.log(err);
+            answer = {code: err.code};
+            res.status(418);
         }
 
         await client.end();
@@ -60,7 +55,6 @@ router.get('/', async function(req, res, next) {
         res.contentType = 'application/json';
         res.send(answer);
 
-        // res.send('ok!');
     });
 
 module.exports = router;

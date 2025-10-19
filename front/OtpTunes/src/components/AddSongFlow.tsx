@@ -127,7 +127,6 @@ export default function AddSongFlow() {
   function uploadSong() {
     setShowUploadingSong(true);
 
-    // we're finally here. Egypt.
     console.log('uploading new song');
     try {
       var body = {
@@ -147,13 +146,16 @@ export default function AddSongFlow() {
       fetch(request)
       .then((result) => { return result.json(); })
       .then((data) => {
-        console.log(data.rows[0]['insert_new_song']);
-        console.log('song uploaded');
-        setNewSongId(data.rows[0]['insert_new_song']);
-        resetMatchedData();
-        resetTextFields();
+        if (data.code) {
+          console.log('Error ', data);
+        } else {
+          console.log(data.rows[0]['insert_new_song']);
+          console.log('song uploaded');
+          setNewSongId(data.rows[0]['insert_new_song']);
+          resetMatchedData();
+          resetTextFields();
+        }
       });
-
     } catch (err) { console.log(err);
       setShowUploadingSong(false);
      }
@@ -169,28 +171,32 @@ export default function AddSongFlow() {
         fetch(`http://localhost:3000/findsongwithtitle?title=${newTitle}&artist=${newArtist}&album=${newAlbum}`)
         .then((result) => {return result.json();})
         .then((data) => {
-          console.log('song result ', data.rows);
-
-          var results = [];
-
-          for (var result of data.rows) {
-            if ((!result['artist_text']) && result['display_artist']) {
-              // The artist didn't match search input
-              continue;
-            } else if ((!result['album_title']) && result['display_album']) {
-              // The album didn't match search input
-              continue;
-            } else {
-              results.push(result);
-            }
-          }
-
-          setSearchResults(results);
-          console.log('results ', results);
-          if (results.length > 0) {
-            setShowSongList(true);
+          if (data.code) {
+            console.log('Error ', data);
           } else {
-            getArtist();
+            console.log('song result ', data.rows);
+
+            var results = [];
+
+            for (var result of data.rows) {
+              if ((!result['artist_text']) && result['display_artist']) {
+                // The artist didn't match search input
+                continue;
+              } else if ((!result['album_title']) && result['display_album']) {
+                // The album didn't match search input
+                continue;
+              } else {
+                results.push(result);
+              }
+            }
+
+            setSearchResults(results);
+            console.log('results ', results);
+            if (results.length > 0) {
+              setShowSongList(true);
+            } else {
+              getArtist();
+            }
           }
           })
       } catch (err) { console.log(err); }
@@ -206,35 +212,39 @@ export default function AddSongFlow() {
       fetch(`http://localhost:3000/getsongsbyartistname?name=${newArtist}&limit=5`)
       .then((result) => {return result.json();})
       .then((data) => {
-        console.log('artist results ', data.rows);
-        const resultsObject : Dictionary<ArtistResult> = {};
-        for (var row of data.rows) {
-          var existing;
-          if (!resultsObject[row.artist_id]) {
-            resultsObject[row.artist_id] = {
-              id: row.artist_id,
-              songs: [],
-              artist: row.artist_text,
-            };
-          }
-          
-          existing = resultsObject[row.artist_id].songs;
-
-          existing.push(row.display_title);
-
-          resultsObject[row.artist_id].songs = existing;
-        }
-
-        const resultsArray : Array<ArtistResult> = [];
-
-        for (var obj of Object.entries(resultsObject)) {
-          resultsArray.push(obj[1]);
-        }
-        setArtistResults(resultsArray);
-        if (resultsArray.length > 0) {
-          setShowArtistList(true);
+        if (data.code) {
+          console.log('Error ', data);
         } else {
-          getAlbum();
+          console.log('artist results ', data.rows);
+          const resultsObject : Dictionary<ArtistResult> = {};
+          for (var row of data.rows) {
+            var existing;
+            if (!resultsObject[row.artist_id]) {
+              resultsObject[row.artist_id] = {
+                id: row.artist_id,
+                songs: [],
+                artist: row.artist_text,
+              };
+            }
+            
+            existing = resultsObject[row.artist_id].songs;
+
+            existing.push(row.display_title);
+
+            resultsObject[row.artist_id].songs = existing;
+          }
+
+          const resultsArray : Array<ArtistResult> = [];
+
+          for (var obj of Object.entries(resultsObject)) {
+            resultsArray.push(obj[1]);
+          }
+          setArtistResults(resultsArray);
+          if (resultsArray.length > 0) {
+            setShowArtistList(true);
+          } else {
+            getAlbum();
+          }
         }
         })
     } catch (err) { console.log(err); }
@@ -249,39 +259,43 @@ function getAlbum() {
       fetch(`http://localhost:3000/getsongsbyalbumname?name=${newAlbum}&limit=5`)
       .then((result) => {return result.json();})
       .then((data) => {
-        console.log('album results ', data.rows);
-        const resultsObject : Dictionary<AlbumResult> = {};
-        for (var row of data.rows) {
-          var existing;
-          if (!resultsObject[row.album_id]) {
-            resultsObject[row.album_id] = {
-              id: row.album_id,
-              songs: [],
-              artist: row.artist_text,
-              title: row.album_title,
-              year: row.release_year,
-            };
-          }
-          
-          existing = resultsObject[row.album_id].songs;
-
-          existing.push(row.song_title);
-
-          resultsObject[row.album_id].songs = existing;
-        }
-
-        const resultsArray = []
-        
-        for (var obj of Object.entries(resultsObject)) {
-          resultsArray.push(obj[1]);
-        }
-
-        setAlbumResults(resultsArray);
-        if (resultsArray.length > 0) {
-          setShowAlbumList(true);
+        if (data.code) {
+          console.log('Error ', data);
         } else {
-          setShowAreYouSure(true);
-          setShowVerifySong(false);
+          console.log('album results ', data.rows);
+          const resultsObject : Dictionary<AlbumResult> = {};
+          for (var row of data.rows) {
+            var existing;
+            if (!resultsObject[row.album_id]) {
+              resultsObject[row.album_id] = {
+                id: row.album_id,
+                songs: [],
+                artist: row.artist_text,
+                title: row.album_title,
+                year: row.release_year,
+              };
+            }
+            
+            existing = resultsObject[row.album_id].songs;
+
+            existing.push(row.song_title);
+
+            resultsObject[row.album_id].songs = existing;
+          }
+
+          const resultsArray = []
+          
+          for (var obj of Object.entries(resultsObject)) {
+            resultsArray.push(obj[1]);
+          }
+
+          setAlbumResults(resultsArray);
+          if (resultsArray.length > 0) {
+            setShowAlbumList(true);
+          } else {
+            setShowAreYouSure(true);
+            setShowVerifySong(false);
+          }
         }
       })
     } catch (err) { console.log(err); }
@@ -454,13 +468,13 @@ function getAlbum() {
         { showAreYouSure && (
           <View style={styles.container}>
             <Text style={styles.verifyText}>Add song with the following information?</Text>
-            <Text style={styles.verifyText} >Please make sure everything is spelled and capitalized correctly!</Text>
-            <Text style={styles.verifyText} >Title: {newTitle}</Text>
+            <Text style={styles.verifyText}>Please make sure everything is spelled and capitalized correctly!</Text>
+            <Text style={styles.verifyText}>Title: {newTitle}</Text>
             {(matchedArtistText || newArtist) &&
-              <Text style={styles.verifyText} >Artist: {matchedArtistText ? matchedArtistText : newArtist}</Text>
+              <Text style={styles.verifyText}>Artist: {matchedArtistText ? matchedArtistText : newArtist}</Text>
             }
             {(matchedAlbumText || newAlbum) && 
-              <Text style={styles.verifyText} >Album: {matchedAlbumText ? matchedAlbumText : newAlbum}</Text>
+              <Text style={styles.verifyText}>Album: {matchedAlbumText ? matchedAlbumText : newAlbum}</Text>
             }
             {(matchedAlbumYear || newAlbumYear) &&
               <Text style={styles.verifyText}>Release year: {matchedAlbumYear ? matchedAlbumYear : newAlbumYear}</Text>

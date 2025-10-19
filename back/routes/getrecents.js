@@ -31,6 +31,8 @@ router.get('/', async function(req, res, next) {
             answer = await client.query(query);
         } catch (err) {
             console.log(err);
+            answer = {code: err.code};
+            res.status(418);
         }
 
         await client.end();

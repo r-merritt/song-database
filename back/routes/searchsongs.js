@@ -93,6 +93,8 @@ router.get('/', async function(req, res, next) {
             answer = await client.query(query);
         } catch (err) {
             console.log(err);
+            answer = {code: err.code};
+            res.status(418);
         }
 
         await client.end();
@@ -100,7 +102,6 @@ router.get('/', async function(req, res, next) {
         res.contentType = 'application/json';
         res.send(answer);
 
-        // res.send('ok!');
     });
 
 module.exports = router;

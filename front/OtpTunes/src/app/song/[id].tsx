@@ -47,15 +47,23 @@ export default function Song() {
       fetch(`http://localhost:3000/getsongbyid?id=${id}`)
       .then((result) => {return result.json();})
       .then((data) => {
-        console.log('song result ', data.rows);
-        setSongResults(data.rows[0]);
+        if (data.code) {
+          console.log('Error ', data);
+        } else {
+          console.log('song result ', data.rows);
+          setSongResults(data.rows[0]);
+        }
       })
       .then(() => {
         fetch(`http://localhost:3000/gettagsbysongid?id=${id}`)
         .then((result) => {return result.json();})
         .then((data) => {
-          console.log('song tags ', data.rows);
-          setTagResults(data.rows);
+          if (data.code) {
+            console.log('Error ', data);
+          } else {
+            console.log('song tags ', data.rows);
+            setTagResults(data.rows);
+          }
         })
       })
     } catch (err) { console.log(err); }
