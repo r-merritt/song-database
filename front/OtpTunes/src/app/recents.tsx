@@ -7,6 +7,8 @@ import ActionButton from '../components/ActionButton';
 import { useFonts } from "expo-font";
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 
+import { apiAddrs } from '../util/api';
+
 const { width } = Dimensions.get('window');
 
 export default function Recents() {
@@ -33,7 +35,7 @@ export default function Recents() {
   function getRecents() {
     console.log('get recent songs');
     try {
-      fetch(`http://localhost:3000/getrecents`)
+      fetch(`${apiAddrs}/getrecents`)
       .then((result) => {return result.json();})
       .then((data) => {
         if (data.code) {

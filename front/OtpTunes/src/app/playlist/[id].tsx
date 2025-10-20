@@ -11,6 +11,7 @@ import { useFonts } from "expo-font";
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 
 import { TagT, PlaylistT } from '../../util/types';
+import { apiAddrs } from '@/src/util/api';
 
 type PlaylistSongT = {
   album_title: string;
@@ -97,7 +98,7 @@ export default function Playlist() {
   useEffect(() => {
     console.log('get playlist by id ', id);
     try {
-      fetch(`http://localhost:3000/getplaylistbyid?id=${id}`)
+      fetch(`${apiAddrs}/getplaylistbyid?id=${id}`)
       .then((result) => {return result.json();})
       .then((data) => {
         if (data.code) {
@@ -114,7 +115,7 @@ export default function Playlist() {
   useEffect(() => {
     console.log('get songs by playlist id ', id);
     try {
-      fetch(`http://localhost:3000/getsongsbyplaylistid?id=${id}`)
+      fetch(`${apiAddrs}/getsongsbyplaylistid?id=${id}`)
       .then((result) => {return result.json();})
       .then((data) => {
         if (data.code) {
@@ -131,7 +132,7 @@ export default function Playlist() {
   useEffect(() => {
     console.log('get tags by playlist id ', id);
     try {
-      fetch(`http://localhost:3000/gettagsbyplaylistid?id=${id}`)
+      fetch(`${apiAddrs}/gettagsbyplaylistid?id=${id}`)
       .then((result) => {return result.json();})
       .then((data) => {
         if (data.code) {

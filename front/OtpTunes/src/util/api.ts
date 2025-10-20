@@ -1,0 +1,1 @@
+export const apiAddrs = "http://localhost:3000";

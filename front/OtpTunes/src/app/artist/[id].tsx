@@ -10,6 +10,8 @@ import { Dictionary } from '../../util/types';
 
 import DisplayAlbumAndSongs from '@/src/components/DisplayAlbumAndSongs';
 
+import { apiAddrs } from '@/src/util/api';
+
 type SongAndAlbum = {
     album_title: string;
     display_album: string;
@@ -51,7 +53,7 @@ export default function Artist() {
   useEffect(() => {
     console.log('get info by id ', id);
     try {
-      fetch(`http://localhost:3000/getartistbyid?id=${id}`)
+      fetch(`${apiAddrs}/getartistbyid?id=${id}`)
       .then((result) => {return result.json();})
       .then((data) => {
         if (data.code) {
@@ -68,7 +70,7 @@ export default function Artist() {
   useEffect(() => {
     console.log('get songs with albums by artist id ', id);
     try {
-      fetch(`http://localhost:3000/getsongsandalbumsbyartistid?id=${id}`)
+      fetch(`${apiAddrs}/getsongsandalbumsbyartistid?id=${id}`)
       .then((result) => {return result.json();})
       .then((data) => {
         if (data.code) {

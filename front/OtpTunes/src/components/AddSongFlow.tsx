@@ -9,6 +9,7 @@ import VerifyArtistAndSongs from './VerifyArtistAndSongs';
 import VerifyAlbumAndSongs from './VerifyAlbumAndSongs';
 
 import { Dictionary } from '../util/types';
+import { apiAddrs } from '../util/api';
 
 const { width } = Dimensions.get('window')
 
@@ -136,7 +137,7 @@ export default function AddSongFlow() {
         albumId: matchedAlbumId? matchedAlbumId : null,
         newAlbumTitle: matchedAlbumId? null : (newAlbum? newAlbum : null),
         newAlbumYear: newAlbumYear? newAlbumYear : null}
-      var request = new Request('http://localhost:3000/addsong', {
+      var request = new Request(`${apiAddrs}/addsong`, {
         method: 'post',
         body: JSON.stringify(body),
         headers: {
@@ -168,7 +169,7 @@ export default function AddSongFlow() {
     } else {
       setShowNoArtistOrAlbumError(false);
       try {
-        fetch(`http://localhost:3000/findsongwithtitle?title=${newTitle}&artist=${newArtist}&album=${newAlbum}`)
+        fetch(`${apiAddrs}/findsongwithtitle?title=${newTitle}&artist=${newArtist}&album=${newAlbum}`)
         .then((result) => {return result.json();})
         .then((data) => {
           if (data.code) {
@@ -209,7 +210,7 @@ export default function AddSongFlow() {
         getAlbum();
       }
       try {
-      fetch(`http://localhost:3000/getsongsbyartistname?name=${newArtist}&limit=5`)
+      fetch(`${apiAddrs}/getsongsbyartistname?name=${newArtist}&limit=5`)
       .then((result) => {return result.json();})
       .then((data) => {
         if (data.code) {
@@ -256,7 +257,7 @@ function getAlbum() {
         setShowVerifySong(false);
       }
       try {
-      fetch(`http://localhost:3000/getsongsbyalbumname?name=${newAlbum}&limit=5`)
+      fetch(`${apiAddrs}/getsongsbyalbumname?name=${newAlbum}&limit=5`)
       .then((result) => {return result.json();})
       .then((data) => {
         if (data.code) {

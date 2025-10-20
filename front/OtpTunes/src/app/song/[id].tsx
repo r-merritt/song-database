@@ -11,6 +11,7 @@ import TagsCard from '../../components/TagsCard'
 import AddTag from '../../components/AddTag';
 
 import { TagT } from '../../util/types';
+import { apiAddrs } from '@/src/util/api';
 
 type SongInfo = {
   album_artist: string;
@@ -44,7 +45,7 @@ export default function Song() {
   useEffect(() => {
     console.log('get info by id ', id);
     try {
-      fetch(`http://localhost:3000/getsongbyid?id=${id}`)
+      fetch(`${apiAddrs}/getsongbyid?id=${id}`)
       .then((result) => {return result.json();})
       .then((data) => {
         if (data.code) {
@@ -55,7 +56,7 @@ export default function Song() {
         }
       })
       .then(() => {
-        fetch(`http://localhost:3000/gettagsbysongid?id=${id}`)
+        fetch(`${apiAddrs}/gettagsbysongid?id=${id}`)
         .then((result) => {return result.json();})
         .then((data) => {
           if (data.code) {

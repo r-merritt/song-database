@@ -7,6 +7,8 @@ import { useRouter } from 'expo-router';
 import { useFonts } from "expo-font";
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 
+import { apiAddrs } from '@/src/util/api';
+
 type AlbumT = {
     artist_text: string;
     display_artist: string;
@@ -43,7 +45,7 @@ export default function Album() {
   useEffect(() => {
     console.log('get album by id ', id);
     try {
-      fetch(`http://localhost:3000/getalbumbyid?id=${id}`)
+      fetch(`${apiAddrs}/getalbumbyid?id=${id}`)
       .then((result) => {return result.json();})
       .then((data) => {
         if (data.code) {
@@ -60,7 +62,7 @@ export default function Album() {
   useEffect(() => {
     console.log('get songs by album id ', id);
     try {
-      fetch(`http://localhost:3000/getsongsbyalbumid?id=${id}`)
+      fetch(`${apiAddrs}/getsongsbyalbumid?id=${id}`)
       .then((result) => {return result.json();})
       .then((data) => {
         if (data.code) {

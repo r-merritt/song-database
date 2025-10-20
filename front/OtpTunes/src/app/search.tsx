@@ -10,6 +10,7 @@ import { useFonts } from "expo-font";
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 
 import { PlaylistT } from '../util/types';
+import { apiAddrs } from '../util/api';
 
 type SongResult = {
   album_title: string;
@@ -106,7 +107,7 @@ export default function Search({ } : { }) {
       console.log('searching for songs with ', title, ' ', artist, ' ', album);
       console.log(tags);
       try {
-        fetch(`http://localhost:3000/searchsongs?title=${title}&artist=${artist}&album=${album}&tags=${tags}`)
+        fetch(`${apiAddrs}/searchsongs?title=${title}&artist=${artist}&album=${album}&tags=${tags}`)
         .then((result) => {return result.json();})
         .then((data) => {
           if (data.code) {
@@ -122,7 +123,7 @@ export default function Search({ } : { }) {
       console.log('searching for playlists with tags');
       console.log(tags);
       try {
-        fetch(`http://localhost:3000/searchplaylistsbytags?tags=${tags}`)
+        fetch(`${apiAddrs}/searchplaylistsbytags?tags=${tags}`)
         .then((result) => {return result.json();})
         .then((data) => {
           if (data.code) {

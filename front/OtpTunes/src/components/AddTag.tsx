@@ -6,6 +6,7 @@ import ActionButton from './ActionButton';
 import { Picker } from '@react-native-picker/picker';
 
 import { TagT } from '../util/types';
+import { apiAddrs } from '../util/api';
 
 export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string, songOrPlaylist : string, getNewTag : Function}) {
   const [tagText, setTagText] = useState('');
@@ -42,7 +43,7 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
     setShowTagMatch(false);
     console.log('checking for tag ', tagText);
     try {
-      fetch(`http://localhost:3000/gettagbytext?tag=${tagText}`)
+      fetch(`${apiAddrs}/gettagbytext?tag=${tagText}`)
       .then((result) => {return result.json();})
       .then((data) => {
         if (data.code) {
@@ -71,7 +72,7 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
     console.log('edit recents');
     try {
       var body = {id: id}
-      var request = new Request('http://localhost:3000/editrecents', {
+      var request = new Request(`${apiAddrs}/editrecents`, {
         method: 'post',
         body: JSON.stringify(body),
         headers: {
@@ -110,7 +111,7 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
   function addExistingSongTag(tag: TagT) {
     console.log('add to song ', tag);
     try {
-      fetch(`http://localhost:3000/addexistingtagtosong?songId=${id}&tagId=${tag.tag_id}`)
+      fetch(`${apiAddrs}/addexistingtagtosong?songId=${id}&tagId=${tag.tag_id}`)
       .then((result) => {
         return result.json();
       })
@@ -129,7 +130,7 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
   function addNewSongTag() {
     console.log('add to song ', tagText, ' ', tagType);
     try {
-      fetch(`http://localhost:3000/addnewtagtosong?id=${id}&tag=${tagText}&type=${tagType}`)
+      fetch(`${apiAddrs}/addnewtagtosong?id=${id}&tag=${tagText}&type=${tagType}`)
       .then((result) => {return result.json();})
       .then((data) => {
         if (data.code) {
@@ -146,7 +147,7 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
   function addExistingPlaylistTag(tag: TagT) {
     console.log('add to playlist ', tag);
     try {
-      fetch(`http://localhost:3000/addexistingtagtoplaylist?playlistId=${id}&tagId=${tag.tag_id}`)
+      fetch(`${apiAddrs}/addexistingtagtoplaylist?playlistId=${id}&tagId=${tag.tag_id}`)
       .then((result) => {return result.json();})
       .then((data) => {
         if (data.code) {
@@ -162,7 +163,7 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
   function addNewPlaylistTag() {
     console.log('add to playlist ', tagText, ' ', tagType);
     try {
-      fetch(`http://localhost:3000/addnewtagtoplaylist?id=${id}&tag=${tagText}&type=${tagType}`)
+      fetch(`${apiAddrs}/addnewtagtoplaylist?id=${id}&tag=${tagText}&type=${tagType}`)
       .then((result) => {return result.json();})
       .then((data) => {
         if (data.code) {

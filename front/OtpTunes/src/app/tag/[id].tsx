@@ -9,6 +9,7 @@ import { useFonts } from "expo-font";
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 
 import { TagT } from '../../util/types';
+import { apiAddrs } from '@/src/util/api';
 
 export default function Tag() {
   const [fontsLoaded, error] = useFonts({
@@ -33,7 +34,7 @@ export default function Tag() {
   useEffect(() => {
     console.log('get tag info by id ', id);
     try {
-      fetch(`http://localhost:3000/gettagbyid?id=${id}`)
+      fetch(`${apiAddrs}/gettagbyid?id=${id}`)
       .then((result) => {return result.json();})
       .then((data) => {
         console.log('tag result ', data.rows);
@@ -46,7 +47,7 @@ export default function Tag() {
   useEffect(() => {
     console.log('get songs by tag id ', id);
     try {
-      fetch(`http://localhost:3000/getsongsbytagid?id=${id}`)
+      fetch(`${apiAddrs}/getsongsbytagid?id=${id}`)
       .then((result) => {return result.json();})
       .then((data) => {
         console.log('songs result ', data.rows);
