@@ -69,7 +69,7 @@ router.get('/', async function(req, res, next) {
                 }
             }
             text += ') tags \n' +
-                    `ON tags.tag_id = song_tags.tag_id GROUP BY song_id HAVING COUNT(song_id) = ${tagArray.length}) \n`;
+                    `ON tags.tag_id = song_tags.tag_id GROUP BY song_id HAVING COUNT(song_id) >= ${tagArray.length}) \n`;
         }
 
         text += ';'
