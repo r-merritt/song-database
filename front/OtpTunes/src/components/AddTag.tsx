@@ -229,15 +229,17 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
             <Text style={styles.sureText}>Add tag </Text>
             <Text style={styles.sureContent}>{tagText} </Text>
             <Text style={styles.sureText}>of type </Text>
-            <Text style={styles.sureContent}>{tagType}?</Text>
+            <Text style={styles.sureContent}>{tagType}</Text>
           </View>
 
-          <Pressable onPress={() => addNewTag()}>
-              <Text style={styles.thisOne}>Yes</Text>
-          </Pressable>
-          <Pressable onPress={() => notSure()}>
-              <Text style={styles.thisOne}>No</Text>
-          </Pressable>
+          <View style={styles.sureButtons}>
+            <Pressable onPress={() => addNewTag()}>
+                <Text style={styles.thisOne}>Add</Text>
+            </Pressable>
+            <Pressable onPress={() => notSure()}>
+                <Text style={styles.thisOne}>Cancel</Text>
+            </Pressable>
+          </View>
         </View>
       }
     </View>
@@ -252,7 +254,7 @@ const styles = StyleSheet.create({
   },
   thisOne: {
     padding: 10,
-    marginLeft: 12,
+    marginRight: 12,
     fontSize: 16,
     backgroundColor: 'rgba(255, 255, 255, 1)',
     borderWidth: 1,
@@ -260,17 +262,23 @@ const styles = StyleSheet.create({
   },
   sureBox: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     paddingLeft: 20,
   },
   sureBoxText: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     paddingTop: 12,
+    paddingBottom: 12,
+  },
+  sureButtons: {
+    display: 'flex',
+    flexDirection: 'row',
   },
   sureContent: {
     fontWeight: 'bold',
     fontFamily: "DMMono_400Regular",
+    fontSize: 18,
   },
   sureText: {
     fontFamily: "DMMono_400Regular",
