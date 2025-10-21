@@ -2,7 +2,7 @@ var pg = require('pg');
 var Client = pg.Client;
 var express = require('express');
 var router = express.Router();
-var config = require('../config');
+var DBClientCreds = require('../DBClientCreds');
 
 /* GET search songs listing. */
 router.get('/', async function(req, res, next) {
@@ -21,7 +21,7 @@ router.get('/', async function(req, res, next) {
         const tagArray = tagsSplit.map((tag) => tag.trim());
         console.log(tagArray);
 
-        const client = new Client(config.DBClientCreds);
+        const client = new Client(DBClientCreds);
 
         function prepareQuery(queryText) {
             return '%' + queryText.split(' ').join('%') + '%';

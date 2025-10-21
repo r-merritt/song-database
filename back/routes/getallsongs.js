@@ -2,13 +2,13 @@ var pg = require('pg');
 var Client = pg.Client;
 var express = require('express');
 var router = express.Router();
-var config = require('../config');
+var DBClientCreds = require('../DBClientCreds');
 
 /* GET all songs listing. */
 router.get('/', async function(req, res, next) {
         console.log("Get all songs");
 
-        const client = new Client(config.DBClientCreds);
+        const client = new Client(DBClientCreds);
 
         await client.connect();
 

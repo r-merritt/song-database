@@ -1,1 +1,1 @@
-export const apiAddrs = "http://localhost:3000";
+export const apiAddrs = "https://api.otptunes.com";

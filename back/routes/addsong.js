@@ -2,12 +2,10 @@ var pg = require('pg');
 var Client = pg.Client;
 var express = require('express');
 var router = express.Router();
-var config = require('../config');
+var DBClientCreds = require('../DBClientCreds');
 
 /* POST add song listing. */
 router.post('/', async function(req, res, next) {
-    // this function assumes that there is a new song to create
-
         console.log("Add song");
 
         console.log(req.body.songTitle);
@@ -25,7 +23,7 @@ router.post('/', async function(req, res, next) {
         console.log(req.body.newAlbumYear);
         //
 
-        const client = new Client(config.DBClientCreds);
+        const client = new Client(DBClientCreds);
 
         await client.connect();
 

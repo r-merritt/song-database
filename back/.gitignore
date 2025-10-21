@@ -3,5 +3,5 @@
 # dependencies
 node_modules/
 
-# config
-config.js
+# DBCreds
+DBClientCreds.js

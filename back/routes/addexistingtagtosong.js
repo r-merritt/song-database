@@ -2,7 +2,7 @@ var pg = require('pg');
 var Client = pg.Client;
 var express = require('express');
 var router = express.Router();
-var config = require('../config');
+var DBClientCreds = require('../DBClientCreds');
 
 /* GET add existing tag to song listing. */
 router.get('/', async function(req, res, next) {
@@ -15,7 +15,7 @@ router.get('/', async function(req, res, next) {
         console.log(req.query.songId);
         console.log(req.query.tagId);
 
-        const client = new Client(config.DBClientCreds);
+        const client = new Client(DBClientCreds);
 
         const values = [
             req.query.songId,
