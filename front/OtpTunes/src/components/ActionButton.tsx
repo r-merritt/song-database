@@ -3,7 +3,9 @@ import {
   Pressable, Text, View, StyleSheet
 } from 'react-native';
 
-export default function ActionButton({onPress, title}: {onPress : Function, title : string}) {
+export default function ActionButton({onPress, title, vPadding}: {onPress : Function, title : string, vPadding? : number}) {
+
+  const verticalPadding = vPadding ? vPadding : 10;
 
   return (
     <Pressable
@@ -14,7 +16,7 @@ export default function ActionButton({onPress, title}: {onPress : Function, titl
         }, styles.buttonContainer,
       ]}
     >
-      <View style={styles.button}>
+      <View style={[{paddingTop: verticalPadding, paddingBottom: verticalPadding}, styles.button]}>
         <Text style={styles.buttonText}>{title}</Text>
       </View>
     </Pressable>
@@ -27,7 +29,8 @@ const styles = StyleSheet.create({
     borderRadius: 3
   },
   button: {
-    padding: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,

@@ -1,45 +1,51 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import ActionButton from './ActionButton';
 
 
 export default function Header() {
   const router = useRouter();
+
+  const b = Platform.select({
+    ios: {padding: 3},
+    android: {padding: 3},
+    default: {padding: 10},
+  });
   
   return (
     <View style={styles.container}>
       <View style={styles.buttonBox}>
         <View style={styles.button}>
-          <ActionButton title='Home' onPress={() =>
+          <ActionButton vPadding={b.padding} title='Home' onPress={() =>
             router.navigate({
               pathname: '/',
             })
           } />
         </View>
         <View style={styles.button}>
-          <ActionButton title='Search' onPress={() =>
+          <ActionButton vPadding={b.padding} title='Search' onPress={() =>
             router.navigate({
               pathname: '/search',
             })
           } />
         </View>
         <View style={styles.button}>
-          <ActionButton title='Add Song' onPress={() =>
+          <ActionButton vPadding={b.padding} title='Add Song' onPress={() =>
             router.navigate({
               pathname: '/addsong',
             })
           } />
         </View>
         <View style={styles.button}>
-          <ActionButton title='Recent Songs' onPress={() =>
+          <ActionButton vPadding={b.padding} title='Recent Songs' onPress={() =>
             router.navigate({
               pathname: '/recents',
             })
           } />
         </View>
         <View style={styles.feedbackButton}>
-          <ActionButton title='Feedback?' onPress={() =>
+          <ActionButton vPadding={b.padding} title='Feedback?' onPress={() =>
               router.navigate({
                 pathname: '/feedback',
               })

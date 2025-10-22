@@ -25,6 +25,7 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
 
   function addTagButton() {
     setShowTagMatch(false);
+    setShowAreYouSure(false);
     if (tagText == '') {
       setShowTagError(true);
       setShowTypeError(false);
@@ -106,6 +107,11 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
     } else {
       console.log('song or playlist wasn\'t song or playlist');
     }
+  }
+
+  function noMatches() {
+    setShowTagMatch(false);
+    setShowAreYouSure(true);
   }
 
   function addExistingSongTag(tag: TagT) {
@@ -201,7 +207,7 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
               </Picker>
             </View>
         </View>
-        <View style={styles.button}>
+        <View style={styles.buttonBox}>
             <ActionButton title='Add Tag' onPress={addTagButton}/>
         </View>
       </View>
@@ -212,14 +218,17 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
           <Text style={styles.matchTitle}>Do any of these tags match?</Text>
           <View style={styles.outerBox}>
           {tagResults.map((tag, key) => 
-          <View key={tag.tag_id} style={styles.tagBox}>
-            <Text style={styles.tagTitle}>Tag: </Text> <Text style={styles.tag}>{tag.tag_text} </Text>
-            <Text style={styles.tagTitle}>Type: </Text> <Text style={styles.tag}>{tag.tag_type}</Text>
-            <Pressable onPress={() => matchedTag(tag)}>
-              <Text style={styles.thisOne}>This one</Text>
-            </Pressable>
-          </View>
+            <View key={tag.tag_id} style={styles.tagBox}>
+              <Text style={styles.tagTitle}>Tag: </Text> <Text style={styles.tag}>{tag.tag_text} </Text>
+              <Text style={styles.tagTitle}>Type: </Text> <Text style={styles.tag}>{tag.tag_type}</Text>
+              <View style={styles.buttonBox}>
+                  <ActionButton title='This one' onPress={() => matchedTag(tag)}/>
+              </View>
+            </View>
           )}
+          </View>
+          <View style={styles.buttonBox}>
+              <ActionButton title='None of these' onPress={noMatches}/>
           </View>
         </View>
       }
@@ -233,12 +242,12 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
           </View>
 
           <View style={styles.sureButtons}>
-            <Pressable onPress={() => addNewTag()}>
-                <Text style={styles.thisOne}>Add</Text>
-            </Pressable>
-            <Pressable onPress={() => notSure()}>
-                <Text style={styles.thisOne}>Cancel</Text>
-            </Pressable>
+            <View style={styles.sureButtonBox}>
+                <ActionButton title='Add' onPress={addNewTag}/>
+            </View>
+            <View style={styles.sureButtonBox}>
+                <ActionButton title='Cancel' onPress={notSure}/>
+            </View>
           </View>
         </View>
       }
@@ -250,15 +259,9 @@ export default function TagsCard({id, songOrPlaylist, getNewTag} : {id : string,
 const styles = StyleSheet.create({
   outerBox: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignContent: 'flex-start',
-  },
-  thisOne: {
-    padding: 10,
-    marginRight: 12,
-    fontSize: 16,
-    backgroundColor: 'rgba(255, 255, 255, 1)',
-    borderWidth: 1,
-    fontFamily: "DMMono_400Regular",
+    maxWidth: '90%',
   },
   sureBox: {
     display: 'flex',
@@ -274,6 +277,7 @@ const styles = StyleSheet.create({
   sureButtons: {
     display: 'flex',
     flexDirection: 'row',
+    alignSelf: 'flex-start',
   },
   sureContent: {
     fontWeight: 'bold',
@@ -335,9 +339,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 5,
   },
-  button: {
+  buttonBox: {
     paddingLeft: 15,
     flex: 1,
+    alignSelf: 'flex-start',
+    minWidth: 'auto',
+  },
+  sureButtonBox: {
+    paddingRight: 15,
+    flex: 1,
+    alignSelf: 'flex-start',
+    minWidth: 'auto',
   },
   notice: {
     fontSize: 16,
